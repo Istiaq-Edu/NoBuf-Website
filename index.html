@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nobuff — Zero-Buffer Video Streaming</title>
+  <meta name="description" content="Stream video from Telegram with zero buffering. Open-source desktop player with MSE prebuffering, parallel downloads, and unlimited free storage.">
+  <meta property="og:title" content="nobuff — Zero-Buffer Video Streaming">
+  <meta property="og:description" content="Stream video from Telegram with zero buffering. Open-source desktop player with MSE prebuffering.">
+  <meta property="og:image" content="assets/banner.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-deep: #08090a;
+      --bg-panel: #0f1011;
+      --bg-surface: #191a1b;
+      --bg-elevated: #28282c;
+      --text-primary: #f7f8f8;
+      --text-secondary: #d0d6e0;
+      --text-muted: #8a8f98;
+      --text-subtle: #62666d;
+      --accent: #0ea5e9;
+      --accent-hover: #38bdf8;
+      --accent-glow: rgba(14, 165, 233, 0.15);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-subtle: rgba(255, 255, 255, 0.05);
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.5;
+      font-feature-settings: 'cv01', 'ss03';
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
+    a:hover { color: var(--accent-hover); }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 9, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+    .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta {
+      background: var(--accent) !important;
+      color: #fff !important;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px !important;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+    .nav-cta:hover { background: var(--accent-hover) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px 4px 6px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 510;
+      line-height: 1.0;
+      letter-spacing: -1.584px;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin: 0 auto 36px;
+      letter-spacing: -0.165px;
+    }
+    .hero-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 500;
+      transition: background 0.15s, transform 0.1s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--accent-hover); color: #fff; transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 500;
+      transition: background 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
+    .hero-banner {
+      margin-top: 60px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 80px rgba(14, 165, 233, 0.08);
+    }
+    .hero-banner img {
+      width: 100%;
+      display: block;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 80px 0; }
+    .section-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 510;
+      line-height: 1.0;
+      letter-spacing: -1.056px;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .section-subtitle {
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      letter-spacing: -0.165px;
+      max-width: 560px;
+    }
+
+    /* ── PROBLEM ── */
+    .problem { border-bottom: 1px solid var(--border-subtle); }
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-top: 48px;
+    }
+    .problem-left h3 {
+      font-size: 20px;
+      font-weight: 590;
+      color: var(--text-primary);
+      letter-spacing: -0.24px;
+      margin-bottom: 16px;
+    }
+    .problem-left p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .problem-stats {
+      display: flex;
+      gap: 24px;
+    }
+    .stat-item {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.6px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-subtle);
+      margin-top: 4px;
+    }
+    .problem-right {
+      padding: 32px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .problem-right h4 {
+      font-size: 15px;
+      font-weight: 590;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+    .provider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .provider-row:last-child { border-bottom: none; }
+    .provider-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .provider-storage {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .provider-row.highlight .provider-name { color: var(--accent); font-weight: 600; }
+    .provider-row.highlight .provider-storage { color: var(--accent); font-weight: 500; }
+
+    /* ── HOW IT WORKS ── */
+    .how-it-works { border-bottom: 1px solid var(--border-subtle); }
+    .pipeline {
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .pipeline-step {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 24px;
+      position: relative;
+    }
+    .pipeline-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .pipeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .pipeline-line {
+      width: 1px;
+      flex: 1;
+      background: linear-gradient(to bottom, var(--accent), rgba(14, 165, 233, 0.1));
+      min-height: 40px;
+    }
+    .pipeline-content {
+      padding-bottom: 36px;
+    }
+    .pipeline-content h4 {
+      font-size: 16px;
+      font-weight: 590;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.18px;
+    }
+    .pipeline-content p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .pipeline-content code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: rgba(14, 165, 233, 0.1);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .pipeline-step:last-child .pipeline-line { display: none; }
+    .pipeline-step:last-child .pipeline-content { padding-bottom: 0; }
+
+    /* ── TECH TABLE ── */
+    .tech-table-wrap {
+      margin-top: 48px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .tech-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .tech-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+      padding: 12px 20px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+    }
+    .tech-table td {
+      padding: 14px 20px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .tech-table tr:last-child td { border-bottom: none; }
+    .tech-table td:first-child {
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .tech-table td:last-child {
+      color: var(--text-muted);
+    }
+    .tech-note {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(14, 165, 233, 0.05);
+      border: 1px solid rgba(14, 165, 233, 0.1);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .tech-note strong { color: var(--text-secondary); }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .feature-card {
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .feature-card h4 {
+      font-size: 15px;
+      font-weight: 590;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.165px;
+    }
+    .feature-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── SCREENSHOTS ── */
+    .screenshots { border-bottom: 1px solid var(--border-subtle); }
+    .screenshot-grid {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .screenshot-placeholder {
+      aspect-ratio: 16 / 10;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-subtle);
+      font-size: 13px;
+      font-weight: 500;
+      transition: border-color 0.15s;
+      overflow: hidden;
+    }
+    .screenshot-placeholder:hover { border-color: rgba(255, 255, 255, 0.15); }
+    .screenshot-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+    .screenshot-placeholder .placeholder-icon {
+      font-size: 32px;
+      opacity: 0.3;
+    }
+    .screenshot-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-subtle);
+    }
+
+    /* ── WHY TELEGRAM ── */
+    .why-telegram { border-bottom: 1px solid var(--border-subtle); }
+    .telegram-grid {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .telegram-card {
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .telegram-card .stat-value {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .telegram-card .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── DOWNLOADS ── */
+    .downloads { text-align: center; }
+    .download-cards {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .download-card {
+      padding: 28px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: background 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+    .download-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .download-card .platform-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+    .download-card h4 {
+      font-size: 15px;
+      font-weight: 590;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .download-card p {
+      font-size: 12px;
+      color: var(--text-subtle);
+    }
+    .download-card a {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .download-beta-note {
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-subtle);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+    footer .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-left {
+      font-size: 13px;
+      color: var(--text-subtle);
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .telegram-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .problem-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .screenshot-grid { grid-template-columns: 1fr; }
+      .download-cards { grid-template-columns: 1fr; max-width: 320px; }
+      .telegram-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+      .hero { padding: 60px 0 40px; }
+      section { padding: 60px 0; }
+      .problem-stats { flex-direction: column; }
+      footer .container { flex-direction: column; gap: 16px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="container">
+    <div class="nav-brand">
+      <img src="assets/logo.svg" alt="nobuff">
+      nobuff
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="https://github.com/Istiaq-Edu/nobuff" target="_blank">GitHub</a>
+      <a href="#download" class="nav-cta">Download</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      Beta 0.1.0 — Open Source
+    </div>
+    <h1>Video streaming<br>with <span>zero buffering</span></h1>
+    <p>An open-source desktop player that streams video from Telegram channels with continuous prebuffering — so playback never stalls, even on seeks.</p>
+    <div class="hero-buttons">
+      <a href="#download" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>
+      <a href="https://github.com/Istiaq-Edu/nobuff" target="_blank" class="btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <div class="hero-banner">
+      <img src="assets/banner.png" alt="nobuff — zero-buffer video streaming">
+    </div>
+  </div>
+</section>
+
+<!-- ── PROBLEM ── -->
+<section class="problem" id="problem">
+  <div class="container">
+    <span class="section-label">The problem</span>
+    <h2 class="section-title">Cloud storage is expensive,<br>slow, and capped.</h2>
+    <div class="problem-grid">
+      <div class="problem-left fade-in">
+        <h3>Telegram's servers have been storing your files for free since 2013.</h3>
+        <p>2 GB per file. Global CDN-backed delivery. No quotas, no expiry, no subscription. The infrastructure already exists — nobuff just makes it stream like a local drive.</p>
+        <div class="problem-stats">
+          <div class="stat-item">
+            <div class="stat-value">2 GB</div>
+            <div class="stat-label">Max file size</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">0 $</div>
+            <div class="stat-label">Cost</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Storage</div>
+          </div>
+        </div>
+      </div>
+      <div class="problem-right fade-in">
+        <h4>Free storage comparison</h4>
+        <div class="provider-row">
+          <span class="provider-name">Google Drive</span>
+          <span class="provider-storage">15 GB</span>
+        </div>
+        <div class="provider-row">
+          <span class="provider-name">Dropbox</span>
+          <span class="provider-storage">2 GB</span>
+        </div>
+        <div class="provider-row">
+          <span class="provider-name">iCloud</span>
+          <span class="provider-storage">5 GB</span>
+        </div>
+        <div class="provider-row highlight">
+          <span class="provider-name">Telegram + nobuff</span>
+          <span class="provider-storage">Unlimited</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <span class="section-label">How it works</span>
+    <h2 class="section-title">Click play. Never buffer.</h2>
+    <p class="section-subtitle">The MSE pipeline fetches, demuxes, and feeds video to your browser engine — all while you watch.</p>
+
+    <div class="pipeline fade-in">
+      <div class="pipeline-step">
+        <div class="pipeline-connector">
+          <div class="pipeline-dot"></div>
+          <div class="pipeline-line"></div>
+        </div>
+        <div class="pipeline-content">
+          <h4>First frame in ~200ms</h4>
+          <p>Fetches <code>512 KB</code> from Telegram — just enough for mp4box.js to demux the MP4 init segments and feed them to MediaSource SourceBuffers.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-connector">
+          <div class="pipeline-dot"></div>
+          <div class="pipeline-line"></div>
+        </div>
+        <div class="pipeline-content">
+          <h4>Progressive prebuffer — next 60 seconds</h4>
+          <p>Fragment sizes ramp up: <code>512KB → 1MB → 2MB → 4MB → 8MB</code>. Starts fast, then saturates your bandwidth. 3 parallel TCP connections to Telegram's data center.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-connector">
+          <div class="pipeline-dot"></div>
+          <div class="pipeline-line"></div>
+        </div>
+        <div class="pipeline-content">
+          <h4>Smart seek — 500ms debounce</h4>
+          <p>Rapid arrow-key skips are debounced. Cache checked first — instant playback if already buffered. Otherwise a fresh <code>512 KB</code> fetch gets you playing again immediately.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-connector">
+          <div class="pipeline-dot"></div>
+          <div class="pipeline-line"></div>
+        </div>
+        <div class="pipeline-content">
+          <h4>Disk-backed stream cache</h4>
+          <p>Downloaded bytes are written to disk with <code>.dat + .meta</code> byte-range sidecars. Overlapping range requests are deduplicated. Replayed instantly on next visit.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-connector">
+          <div class="pipeline-dot"></div>
+        </div>
+        <div class="pipeline-content">
+          <h4>Background cache continues after close</h4>
+          <p>Close the player — the full video keeps downloading. Gap detection fills in what's missing. Next time you open it, playback is instant from cache.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-table-wrap fade-in">
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>What</th>
+            <th>How</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Progressive fragments</td><td class="mono">512KB → 8MB</td><td>First frame in ~200ms, then saturate bandwidth</td></tr>
+          <tr><td>60s prebuffer window</td><td>Continuous fetch ahead of playback</td><td>You never outrun the buffer</td></tr>
+          <tr><td>3× parallel TCP pool</td><td>Split file across 3 connections</td><td>~3× bandwidth vs single-threaded</td></tr>
+          <tr><td>Download coordinator</td><td>Deduplicate overlapping ranges</td><td>No wasted bandwidth on concurrent seeks</td></tr>
+          <tr><td>Seek debounce</td><td class="mono">500ms</td><td>Arrow-key spam doesn't spawn 15 downloads</td></tr>
+          <tr><td>VBR byte→time table</td><td>mp4box calibration points</td><td>Accurate seek for variable bitrate content</td></tr>
+          <tr><td>Buffer cap + backpressure</td><td class="mono">50MB / 2min</td><td>Prevents memory bloat on long videos</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tech-note fade-in">
+      <strong>Note:</strong> The MSE prebuffer pipeline currently supports <strong>.mp4</strong> files only. Support for <strong>.ts</strong> (MPEG-TS) and <strong>.mkv</strong> containers is planned. Non-MP4 video files fall back to direct download playback.
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="container">
+    <span class="section-label">Features</span>
+    <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="feature-icon">▶️</div>
+        <h4>MSE Video Player</h4>
+        <p>Media Source Extensions with mp4box.js demuxing. Progressive fragment sizing for instant first frame.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🔄</div>
+        <h4>Continuous Prebuffer</h4>
+        <p>60-second look-ahead downloads while you watch. Playback never stalls.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">💾</div>
+        <h4>Disk-Backed Cache</h4>
+        <p>Byte-range tracking with gap detection. Cached videos replay instantly.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📁</div>
+        <h4>Folder System</h4>
+        <p>Telegram channels as folders. Create, rename, delete, drag-and-drop organization.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📥</div>
+        <h4>Parallel Downloads</h4>
+        <p>3 concurrent TCP connections per file. ~3× faster than single-threaded.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📄</div>
+        <h4>PDF Viewer</h4>
+        <p>Infinite-scroll PDF rendering with zoom and page navigation built in.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🤖</div>
+        <h4>REST API</h4>
+        <p>Local HTTP API (off by default) with API key auth. Enables AI agents and automation.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🔒</div>
+        <h4>Local-Only</h4>
+        <p>All credentials and data stay on your machine. No telemetry, no third-party servers.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🖥️</div>
+        <h4>Cross-Platform</h4>
+        <p>Native builds for Windows, macOS (Intel + Apple Silicon), and Linux.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SCREENSHOTS ── -->
+<section class="screenshots" id="screenshots">
+  <div class="container">
+    <span class="section-label">Screenshots</span>
+    <h2 class="section-title">See it in action.</h2>
+    <p class="section-subtitle">Replace these placeholders with actual app screenshots.</p>
+
+    <div class="screenshot-grid">
+      <div class="screenshot-placeholder">
+        <span class="placeholder-icon">📊</span>
+        <span class="screenshot-label">Dashboard</span>
+      </div>
+      <div class="screenshot-placeholder">
+        <span class="placeholder-icon">📁</span>
+        <span class="screenshot-label">File Explorer</span>
+      </div>
+      <div class="screenshot-placeholder">
+        <span class="placeholder-icon">▶️</span>
+        <span class="screenshot-label">Video Playback</span>
+      </div>
+      <div class="screenshot-placeholder">
+        <span class="placeholder-icon">🖼️</span>
+        <span class="screenshot-label">Image Preview</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY TELEGRAM ── -->
+<section class="why-telegram" id="why-telegram">
+  <div class="container">
+    <span class="section-label">Why Telegram?</span>
+    <h2 class="section-title">The best cloud you<br>never knew you had.</h2>
+
+    <div class="telegram-grid fade-in">
+      <div class="telegram-card">
+        <div class="stat-value">Unlimited</div>
+        <div class="stat-label">Storage — no quotas, no expiry</div>
+      </div>
+      <div class="telegram-card">
+        <div class="stat-value">Global CDN</div>
+        <div class="stat-label">Served from nearest data center</div>
+      </div>
+      <div class="telegram-card">
+        <div class="stat-value">2 GB</div>
+        <div class="stat-label">Max file size — that's a 4K movie</div>
+      </div>
+      <div class="telegram-card">
+        <div class="stat-value">$0</div>
+        <div class="stat-label">Free for all users</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DOWNLOAD ── -->
+<section class="downloads" id="download">
+  <div class="container">
+    <span class="section-label">Download</span>
+    <h2 class="section-title">Get nobuff</h2>
+    <p class="section-subtitle" style="margin: 0 auto;">Beta 0.1.0 — auto-updates coming soon.</p>
+
+    <div class="download-cards">
+      <a href="https://github.com/Istiaq-Edu/nobuff/releases" target="_blank" class="download-card" style="text-decoration:none">
+        <div class="platform-icon">🪟</div>
+        <h4>Windows</h4>
+        <p>.msi / .exe</p>
+        <span style="color: var(--accent);">Download →</span>
+      </a>
+      <a href="https://github.com/Istiaq-Edu/nobuff/releases" target="_blank" class="download-card" style="text-decoration:none">
+        <div class="platform-icon">🍎</div>
+        <h4>macOS</h4>
+        <p>Intel + Apple Silicon</p>
+        <span style="color: var(--accent);">Download →</span>
+      </a>
+      <a href="https://github.com/Istiaq-Edu/nobuff/releases" target="_blank" class="download-card" style="text-decoration:none">
+        <div class="platform-icon">🐧</div>
+        <h4>Linux</h4>
+        <p>AppImage / .deb</p>
+        <span style="color: var(--accent);">Download →</span>
+      </a>
+    </div>
+
+    <p class="download-beta-note">Auto-update is not yet active. Watch <a href="https://github.com/Istiaq-Edu/nobuff/releases" target="_blank">Releases</a> for new builds.</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-left">
+      © 2025 nobuff. MIT License. Not affiliated with Telegram FZ-LLC.
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/Istiaq-Edu/nobuff" target="_blank">GitHub</a>
+      <a href="https://github.com/Istiaq-Edu/nobuff/releases" target="_blank">Releases</a>
+      <a href="https://github.com/Istiaq-Edu/nobuff/blob/main/LICENSE" target="_blank">License</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── JS ── -->
+<script>
+  // Intersection Observer for fade-in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Nav background on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 20
+      ? 'rgba(8, 9, 10, 0.95)'
+      : 'rgba(8, 9, 10, 0.85)';
+  });
+</script>
+
+</body>
+</html>
