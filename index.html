@@ -403,15 +403,16 @@
     }
     .tech-note {
       margin-top: 16px;
-      padding: 12px 16px;
-      background: rgba(29, 252, 159, 0.05);
-      border: 1px solid rgba(29, 252, 159, 0.1);
+      padding: 14px 18px;
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      border-left: 3px solid #fbbf24;
       border-radius: var(--radius-md);
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-muted);
       line-height: 1.6;
     }
-    .tech-note strong { color: var(--text-secondary); }
+    .tech-note strong { color: #fbbf24; }
 
     /* ── FEATURES ── */
     .features-grid {
@@ -566,9 +567,20 @@
     }
     .download-beta-note {
       margin-top: 24px;
-      font-size: 13px;
-      color: var(--text-subtle);
+      padding: 14px 18px;
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      border-left: 3px solid #fbbf24;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
     }
+    .download-beta-note strong { color: #fbbf24; }
 
     /* ── FOOTER ── */
     footer {
@@ -796,7 +808,7 @@
     </div>
 
     <div class="tech-note fade-in">
-      <strong>Note:</strong> The MSE prebuffer pipeline currently supports <strong>.mp4</strong> files only. Support for <strong>.ts</strong> (MPEG-TS) and <strong>.mkv</strong> containers is planned. Non-MP4 video files fall back to direct download playback.
+      <strong>⚠ Format Support:</strong> The MSE prebuffer pipeline currently supports <strong>.mp4</strong> files only. Support for <strong>.ts</strong> (MPEG-TS) and <strong>.mkv</strong> containers is planned. Non-MP4 video files fall back to direct download playback.
     </div>
   </div>
 </section>
@@ -841,7 +853,7 @@
       <div class="feature-card fade-in">
         <div class="feature-icon">📁</div>
         <h4>Folder System</h4>
-        <p>Telegram channels as folders. Create, rename, delete, drag-and-drop organization.</p>
+        <p>Telegram channels as folders. Create, rename, delete, drag-and-drop. To add an existing channel, just append <code>[NB]</code> to its name.</p>
       </div>
       <div class="feature-card fade-in">
         <div class="feature-icon">📥</div>
@@ -958,7 +970,7 @@
       </a>
     </div>
 
-    <p class="download-beta-note">Auto-update is not yet active. Watch <a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank">Releases</a> for new builds.</p>
+    <p class="download-beta-note"><strong>⚠ Auto-update is not yet active.</strong> Watch <a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank">Releases</a> for the latest builds.</p>
   </div>
 </section>
 
