@@ -629,6 +629,132 @@
       color: var(--text-muted);
     }
 
+    /* ── HERO ENTRANCE ── */
+    .hero-badge, .hero h1, .hero p, .hero-buttons, .hero-banner {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .hero-badge.animate-in { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; }
+    .hero h1.animate-in    { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards; }
+    .hero p.animate-in      { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; }
+    .hero-buttons.animate-in { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards; }
+    .hero-banner.animate-in  { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards; }
+
+    @keyframes heroFadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── FLOATING GLOW ORB ── */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      width: 500px;
+      height: 500px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(29, 252, 159, 0.07) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: orbFloat 10s ease-in-out infinite;
+      z-index: 0;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero > .container { position: relative; z-index: 1; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+      50%      { transform: translateX(-50%) translateY(-20px) scale(1.03); opacity: 0.7; }
+    }
+
+    /* ── PIPELINE STEP STAGGER ── */
+    .pipeline-step {
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .pipeline-step.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .pipeline-step:nth-child(1).visible { transition-delay: 0.0s; }
+    .pipeline-step:nth-child(2).visible { transition-delay: 0.1s; }
+    .pipeline-step:nth-child(3).visible { transition-delay: 0.2s; }
+    .pipeline-step:nth-child(4).visible { transition-delay: 0.3s; }
+    .pipeline-step:nth-child(5).visible { transition-delay: 0.4s; }
+
+    /* ── PIPELINE DOT PULSE ── */
+    .pipeline-dot {
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    .pipeline-step:nth-child(2) .pipeline-dot { animation-delay: 0.3s; }
+    .pipeline-step:nth-child(3) .pipeline-dot { animation-delay: 0.6s; }
+    .pipeline-step:nth-child(4) .pipeline-dot { animation-delay: 0.9s; }
+    .pipeline-step:nth-child(5) .pipeline-dot { animation-delay: 1.2s; }
+
+    @keyframes dotPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0.4); }
+      50%      { box-shadow: 0 0 0 6px rgba(29, 252, 159, 0); }
+    }
+
+    /* ── ENHANCED FEATURE CARD HOVER ── */
+    .feature-card {
+      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover {
+      background: rgba(29, 252, 159, 0.08);
+      border-color: rgba(29, 252, 159, 0.25);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(29, 252, 159, 0.08), 0 0 0 1px rgba(29, 252, 159, 0.12);
+    }
+
+    /* ── ENHANCED DOWNLOAD CARD HOVER ── */
+    .download-card {
+      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .download-card:hover {
+      background: rgba(29, 252, 159, 0.08);
+      border-color: rgba(29, 252, 159, 0.3);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(29, 252, 159, 0.1);
+    }
+
+    /* ── DOWNLOAD CARD SELECTED HIGHLIGHT ── */
+    .download-card.detected {
+      border-color: rgba(29, 252, 159, 0.35);
+      background: rgba(29, 252, 159, 0.06);
+      box-shadow: 0 0 20px rgba(29, 252, 159, 0.06);
+    }
+    .download-card.detected::after {
+      content: 'Your OS';
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      background: var(--accent);
+      color: #013718;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+    .download-card {
+      position: relative;
+    }
+
+    /* ── SCREENSHOT HOVER ZOOM ── */
+    .screenshot-placeholder {
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .screenshot-placeholder:hover {
+      border-color: rgba(29, 252, 159, 0.25);
+      transform: scale(1.02);
+    }
+
     /* ── ANIMATIONS ── */
     .fade-in {
       opacity: 0;
@@ -638,6 +764,53 @@
     .fade-in.visible {
       opacity: 1;
       transform: translateY(0);
+    }
+
+    /* ── HERO BADGE DOT LIVE PULSE ── */
+    .hero-badge-dot {
+      animation: badgeDotPulse 2s ease-in-out infinite;
+    }
+    @keyframes badgeDotPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0.5); }
+      50%      { box-shadow: 0 0 0 4px rgba(29, 252, 159, 0); }
+    }
+
+    /* ── BUTTON SHIMMER ON HOVER ── */
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: none;
+    }
+    .btn-primary:hover::after {
+      animation: btnShimmer 0.6s ease forwards;
+    }
+    @keyframes btnShimmer {
+      to { left: 100%; }
+    }
+
+    /* ── REDUCED MOTION ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .hero-badge, .hero h1, .hero p, .hero-buttons, .hero-banner {
+        opacity: 1;
+        transform: none;
+      }
+      .pipeline-step { opacity: 1; transform: none; }
+      .fade-in { opacity: 1; transform: none; }
+      .hero::before { animation: none; opacity: 0.5; }
     }
 
     /* ── RESPONSIVE ── */
@@ -1081,7 +1254,16 @@
 
 <!-- ── JS ── -->
 <script>
-  // Intersection Observer for fade-in animations
+  // ── Hero entrance animation (staggered) ──
+  document.addEventListener('DOMContentLoaded', () => {
+    const heroEls = ['.hero-badge', '.hero h1', '.hero p', '.hero-buttons', '.hero-banner'];
+    heroEls.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.classList.add('animate-in');
+    });
+  });
+
+  // ── Intersection Observer for fade-in + pipeline stagger ──
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -1091,7 +1273,7 @@
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  document.querySelectorAll('.fade-in, .pipeline-step').forEach(el => observer.observe(el));
 
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1157,6 +1339,17 @@
       const linuxUrl = findAsset(['amd64.appimage', 'amd64.deb', '.appimage', '.deb']);
       const linuxEl = document.getElementById('dl-linux');
       if (linuxUrl && linuxEl) linuxEl.href = linuxUrl;
+
+      // ── Highlight the card matching the visitor's OS ──
+      const ua = navigator.userAgent;
+      const isWin = /Win/.test(ua);
+      const isMac = /Mac/.test(ua);
+      const isLinux = /Linux/.test(ua) && !/Android/.test(ua);
+      const detectedId = isWin ? 'dl-win' : isMac ? 'dl-mac' : isLinux ? 'dl-linux' : null;
+      if (detectedId) {
+        const detectedEl = document.getElementById(detectedId);
+        if (detectedEl) detectedEl.classList.add('detected');
+      }
     } catch (e) {
       // Silently fail — cards keep their fallback GitHub releases link
     }
