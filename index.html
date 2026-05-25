@@ -449,14 +449,20 @@
       line-height: 1.6;
     }
     .nb-tip {
-      margin-top: 10px;
-      padding: 10px 12px;
-      background: rgba(29, 252, 159, 0.08);
-      border: 1px solid rgba(29, 252, 159, 0.2);
-      border-radius: 6px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: #c8f5e0;
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: rgba(29, 252, 159, 0.12);
+      border: 1.5px solid rgba(29, 252, 159, 0.35);
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e0fff0;
+      box-shadow: 0 0 12px rgba(29, 252, 159, 0.1);
+      animation: nb-pulse 3s ease-in-out infinite;
+    }
+    @keyframes nb-pulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(29, 252, 159, 0.1); }
+      50% { box-shadow: 0 0 20px rgba(29, 252, 159, 0.25); }
     }
     .nb-tip strong { color: var(--accent); }
     .nb-tip code {
@@ -694,6 +700,71 @@
     </div>
     <div class="hero-banner">
       <img src="assets/banner.png" alt="NoBuf — zero-buffer video streaming">
+    </div>
+  </div>
+</section>
+
+<!-- ── PROMO BANNER ── -->
+<style>
+  .promo-banner {
+    padding: 20px 0;
+    background: linear-gradient(135deg, rgba(29, 252, 159, 0.06) 0%, rgba(99, 102, 241, 0.06) 100%);
+    border-top: 1px solid rgba(29, 252, 159, 0.15);
+    border-bottom: 1px solid rgba(29, 252, 159, 0.15);
+  }
+  .promo-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+  }
+  .promo-item {
+    padding: 14px 20px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(29, 252, 159, 0.2);
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .promo-item a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+  .promo-item a:hover { opacity: 0.85; }
+  .promo-item .promo-label {
+    display: inline-block;
+    background: rgba(29, 252, 159, 0.15);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+  .promo-item .promo-warn { color: #fbbf24; font-size: 12px; }
+  .promo-item code {
+    background: rgba(29, 252, 159, 0.15);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+</style>
+<section class="promo-banner">
+  <div class="container">
+    <div class="promo-inner">
+      <div class="promo-item">
+        <span class="promo-label">🚀 Free AI Cloud</span>
+        <a href="https://agentrouter.org/register?aff=rBMj" target="_blank">Sign up at AgentRouter.org</a> and get <strong>$150 free balance</strong> to run AI agents, LLMs, and inference workloads.
+        <br><span class="promo-warn">⚠️ Use an older GitHub account to qualify for the $150 bonus. 🎁 This referral link grants an extra $25.</span>
+      </div>
+      <div class="promo-item">
+        <span class="promo-label">📂 Quick Tip</span>
+        Already have a Telegram channel? Append <code>[NB]</code> to its name — NoBuf detects it instantly. No re-upload needed.
+      </div>
     </div>
   </div>
 </section>
@@ -966,27 +1037,28 @@
     <p class="section-subtitle" style="margin: 0 auto;">Always free. Always open source.</p>
 
     <div class="download-cards" id="download-cards">
-      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" target="_blank" class="download-card">
+      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" id="dl-win" class="download-card">
         <div class="platform-icon">🪟</div>
         <h4>Windows</h4>
         <p>.msi / .exe</p>
         <span class="download-link">Download →</span>
         <div class="download-version" id="dl-version-win"></div>
       </a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" target="_blank" class="download-card">
+      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" id="dl-mac" class="download-card">
         <div class="platform-icon">🍎</div>
         <h4>macOS</h4>
         <p>Intel + Apple Silicon</p>
         <span class="download-link">Download →</span>
         <div class="download-version" id="dl-version-mac"></div>
       </a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" target="_blank" class="download-card">
+      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" id="dl-linux" class="download-card">
         <div class="platform-icon">🐧</div>
         <h4>Linux</h4>
         <p>AppImage / .deb</p>
         <span class="download-link">Download →</span>
         <div class="download-version" id="dl-version-linux"></div>
       </a>
+      <p class="download-beta-note" style="grid-column: 1 / -1; margin-top: 0.5rem;">Looking for a specific format? See <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" target="_blank">all release assets</a>.</p>
     </div>
 
     <p class="download-beta-note"><strong>⚠ Auto-update is not yet active.</strong> Watch <a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank">Releases</a> for the latest builds.</p>
@@ -1038,7 +1110,7 @@
       : 'rgba(1, 55, 24, 0.85)';
   });
 
-  // Fetch latest release version from GitHub API
+  // Fetch latest release and resolve direct download URLs per platform
   (async function fetchLatestRelease() {
     try {
       const resp = await fetch('https://api.github.com/repos/Istiaq-Edu/NoBuf/releases/latest');
@@ -1046,6 +1118,7 @@
       const data = await resp.json();
       const version = data.tag_name || data.name || '';
       const cleanVersion = version.startsWith('v') ? version : 'v' + version;
+      const assets = data.assets || [];
 
       // Update hero badge
       const heroVersion = document.getElementById('hero-version');
@@ -1056,8 +1129,36 @@
       dlLabels.forEach(el => {
         if (version) el.textContent = cleanVersion;
       });
+
+      // Resolve direct download URLs per platform
+      const findAsset = (patterns) => {
+        for (const pat of patterns) {
+          const match = assets.find(a => a.name.toLowerCase().includes(pat.toLowerCase()));
+          if (match) return match.browser_download_url;
+        }
+        return null;
+      };
+
+      // Windows: prefer .msi, fall back to .exe
+      const winUrl = findAsset(['x64_en-US.msi', 'x64-setup.exe', '.msi', '.exe']);
+      const winEl = document.getElementById('dl-win');
+      if (winUrl && winEl) winEl.href = winUrl;
+
+      // macOS: detect Apple Silicon vs Intel, fall back to x64
+      const isAppleSilicon = /Mac/.test(navigator.userAgent) &&
+        (navigator.maxTouchPoints > 1 || /Apple/.test(navigator.vendor));
+      const macUrl = isAppleSilicon
+        ? findAsset(['aarch64.dmg', '_arm64.dmg', 'x64.dmg'])
+        : findAsset(['x64.dmg', 'aarch64.dmg']);
+      const macEl = document.getElementById('dl-mac');
+      if (macUrl && macEl) macEl.href = macUrl;
+
+      // Linux: prefer AppImage, fall back to .deb
+      const linuxUrl = findAsset(['amd64.appimage', 'amd64.deb', '.appimage', '.deb']);
+      const linuxEl = document.getElementById('dl-linux');
+      if (linuxUrl && linuxEl) linuxEl.href = linuxUrl;
     } catch (e) {
-      // Silently fail — version labels stay as-is
+      // Silently fail — cards keep their fallback GitHub releases link
     }
   })();
 </script>
