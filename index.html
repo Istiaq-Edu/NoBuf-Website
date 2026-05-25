@@ -630,18 +630,25 @@
     }
 
     /* ── HERO ENTRANCE ── */
-    .hero-badge, .hero h1, .hero p, .hero-buttons, .hero-banner {
-      opacity: 0;
-      transform: translateY(20px);
+    .hero-badge {
+      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
     }
-    .hero-badge.animate-in { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; }
-    .hero h1.animate-in    { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards; }
-    .hero p.animate-in      { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; }
-    .hero-buttons.animate-in { animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards; }
-    .hero-banner.animate-in  { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards; }
+    .hero h1 {
+      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+    }
+    .hero > .container > p {
+      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+    }
+    .hero-buttons {
+      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+    }
+    .hero-banner {
+      animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+    }
 
     @keyframes heroFadeUp {
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     /* ── FLOATING GLOW ORB ── */
@@ -804,13 +811,8 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
-      .hero-badge, .hero h1, .hero p, .hero-buttons, .hero-banner {
-        opacity: 1;
-        transform: none;
-      }
       .pipeline-step { opacity: 1; transform: none; }
       .fade-in { opacity: 1; transform: none; }
-      .hero::before { animation: none; opacity: 0.5; }
     }
 
     /* ── RESPONSIVE ── */
@@ -996,7 +998,7 @@
     <h2 class="section-title">Click play. Never buffer.</h2>
     <p class="section-subtitle">The MSE pipeline fetches, demuxes, and feeds video to your browser engine — all while you watch.</p>
 
-    <div class="pipeline fade-in">
+    <div class="pipeline">
       <div class="pipeline-step">
         <div class="pipeline-connector">
           <div class="pipeline-dot"></div>
@@ -1254,15 +1256,6 @@
 
 <!-- ── JS ── -->
 <script>
-  // ── Hero entrance animation (staggered) ──
-  document.addEventListener('DOMContentLoaded', () => {
-    const heroEls = ['.hero-badge', '.hero h1', '.hero p', '.hero-buttons', '.hero-banner'];
-    heroEls.forEach(sel => {
-      const el = document.querySelector(sel);
-      if (el) el.classList.add('animate-in');
-    });
-  });
-
   // ── Intersection Observer for fade-in + pipeline stagger ──
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
