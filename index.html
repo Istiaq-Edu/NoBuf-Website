@@ -632,16 +632,16 @@
     /* ── HERO ENTRANCE ── */
     /* hero-badge animation moved to badgeGlow combo */
     .hero h1 {
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both !important;
     }
     .hero > .container > p {
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both !important;
     }
     .hero-buttons {
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both !important;
     }
     .hero-banner {
-      animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both;
+      animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both !important;
     }
 
     @keyframes heroFadeUp {
@@ -777,7 +777,7 @@
     }
     .hero-badge {
       animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both,
-                 badgeGlow 2.5s ease-in-out 1.5s infinite;
+                 badgeGlow 2.5s ease-in-out 1.5s infinite !important;
     }
     @keyframes badgeGlow {
       0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0); border-color: var(--border); }
@@ -821,6 +821,191 @@
       .fade-in { opacity: 1; transform: none; }
     } */
 
+    /* ═══════════════════════════════════════════
+       PREMIUM EFFECTS
+       ═══════════════════════════════════════════ */
+
+    /* ── GRADIENT TEXT SHIMMER on "zero buffering" ── */
+    .hero h1 span {
+      background: linear-gradient(
+        135deg,
+        #1dfc9f 0%,
+        #40a57f 25%,
+        #a8fadf 50%,
+        #40a57f 75%,
+        #1dfc9f 100%
+      ) !important;
+      background-size: 200% 200% !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
+                 textShimmer 4s ease-in-out 1.8s infinite !important;
+    }
+    @keyframes textShimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+
+    /* ── CURSOR GLOW FOLLOW in hero ── */
+    .hero-glow {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(29, 252, 159, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+    .hero:hover .hero-glow {
+      opacity: 1;
+    }
+
+    /* ── FEATURE CARD STAGGER REVEAL ── */
+    .feature-card.fade-in:nth-child(1)  { transition-delay: 0.00s; }
+    .feature-card.fade-in:nth-child(2)  { transition-delay: 0.06s; }
+    .feature-card.fade-in:nth-child(3)  { transition-delay: 0.12s; }
+    .feature-card.fade-in:nth-child(4)  { transition-delay: 0.18s; }
+    .feature-card.fade-in:nth-child(5)  { transition-delay: 0.24s; }
+    .feature-card.fade-in:nth-child(6)  { transition-delay: 0.30s; }
+    .feature-card.fade-in:nth-child(7)  { transition-delay: 0.36s; }
+    .feature-card.fade-in:nth-child(8)  { transition-delay: 0.42s; }
+    .feature-card.fade-in:nth-child(9)  { transition-delay: 0.48s; }
+    .feature-card.fade-in:nth-child(10) { transition-delay: 0.54s; }
+    .feature-card.fade-in:nth-child(11) { transition-delay: 0.60s; }
+    .feature-card.fade-in:nth-child(12) { transition-delay: 0.66s; }
+
+    /* ── NAV SHRINK ON SCROLL ── */
+    nav {
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    nav.scrolled {
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      border-bottom-color: rgba(29, 252, 159, 0.12);
+    }
+
+    /* ── TECH TABLE ROW HOVER ── */
+    .tech-table tbody tr {
+      transition: background 0.15s ease;
+    }
+    .tech-table tbody tr:hover {
+      background: rgba(29, 252, 159, 0.04);
+    }
+    .tech-table tbody tr:hover td:first-child {
+      color: var(--accent);
+    }
+
+    /* ── MAGNETIC BUTTON ── */
+    .btn-primary, .btn-ghost {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background 0.15s, box-shadow 0.2s !important;
+    }
+    .btn-primary:active, .btn-ghost:active {
+      transform: scale(0.97) !important;
+    }
+    .btn-primary {
+      box-shadow: 0 0 0 0 rgba(29, 252, 159, 0);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 20px rgba(29, 252, 159, 0.2),
+                  0 0 60px rgba(29, 252, 159, 0.05);
+    }
+
+    /* ── HERO BANNER PARALLAX ── */
+    .hero-banner {
+      will-change: transform;
+    }
+
+    /* ── STAT ITEM HOVER ── */
+    .stat-item {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(29, 252, 159, 0.08);
+    }
+
+    /* ── TELEGRAM CARD HOVER ── */
+    .telegram-card {
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .telegram-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(29, 252, 159, 0.3);
+      box-shadow: 0 8px 32px rgba(29, 252, 159, 0.06);
+    }
+
+    /* ── PROVIDER ROW HOVER ── */
+    .provider-row {
+      transition: background 0.15s ease;
+    }
+    .provider-row:hover {
+      background: rgba(29, 252, 159, 0.03);
+    }
+
+    /* ── DOWNLOAD CARD ICON BOUNCE ── */
+    .download-card .platform-icon {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .download-card:hover .platform-icon {
+      transform: scale(1.15) translateY(-2px);
+    }
+
+    /* ── FEATURE ICON GLOW ── */
+    .feature-icon {
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .feature-card:hover .feature-icon {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 6px rgba(29, 252, 159, 0.3));
+    }
+
+    /* ── FOOTER LINK UNDERLINE ── */
+    .footer-links a {
+      position: relative;
+    }
+    .footer-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.2s ease;
+    }
+    .footer-links a:hover::after {
+      width: 100%;
+    }
+
+    /* ── NAV LINK UNDERLINE ── */
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.2s ease;
+    }
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* ── PREFERS REDUCED MOTION ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .hero-glow { display: none; }
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
       .features-grid { grid-template-columns: repeat(2, 1fr); }
@@ -861,6 +1046,7 @@
 
 <!-- ── HERO ── -->
 <section class="hero">
+  <div class="hero-glow" id="hero-glow"></div>
   <div class="container">
     <div class="hero-badge">
       <div class="hero-badge-dot"></div>
