@@ -982,6 +982,9 @@
     }
 
     /* ── NAV LINK UNDERLINE ── */
+    .nav-links a {
+      position: relative;
+    }
     .nav-links a::after {
       content: '';
       position: absolute;
@@ -1539,6 +1542,46 @@
       // Silently fail — cards keep their fallback GitHub releases link
     }
   })();
+
+  // ── Cursor glow follow in hero ──
+  const heroGlow = document.getElementById('hero-glow');
+  const heroSection = document.querySelector('.hero');
+  if (heroGlow && heroSection) {
+    heroSection.addEventListener('mousemove', (e) => {
+      const rect = heroSection.getBoundingClientRect();
+      heroGlow.style.left = (e.clientX - rect.left) + 'px';
+      heroGlow.style.top = (e.clientY - rect.top) + 'px';
+    });
+  }
+
+  // ── Magnetic button effect ──
+  document.querySelectorAll('.btn-primary, .btn-ghost').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      btn.style.transform = 'translate(' + (x * 0.15) + 'px, ' + (y * 0.15) + 'px)';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
+    });
+  });
+
+  // ── Nav scrolled class ──
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // ── Hero banner parallax ──
+  const heroBanner = document.querySelector('.hero-banner');
+  if (heroBanner) {
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      if (scrolled < 800) {
+        heroBanner.style.transform = 'translateY(' + (scrolled * 0.08) + 'px)';
+      }
+    }, { passive: true });
+  }
 </script>
 
 </body>
