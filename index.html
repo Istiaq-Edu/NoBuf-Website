@@ -630,24 +630,22 @@
     }
 
     /* ── HERO ENTRANCE ── */
-    .hero-badge {
-      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
-    }
+    /* hero-badge animation moved to badgeGlow combo */
     .hero h1 {
-      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
     }
     .hero > .container > p {
-      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
     }
     .hero-buttons {
-      animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both;
     }
     .hero-banner {
-      animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+      animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both;
     }
 
     @keyframes heroFadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(60px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
@@ -777,6 +775,14 @@
     .hero-badge-dot {
       animation: badgeDotPulse 2s ease-in-out infinite;
     }
+    .hero-badge {
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both,
+                 badgeGlow 2.5s ease-in-out 1.5s infinite;
+    }
+    @keyframes badgeGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0); border-color: var(--border); }
+      50% { box-shadow: 0 0 16px 4px rgba(29, 252, 159, 0.25); border-color: rgba(29, 252, 159, 0.4); }
+    }
     @keyframes badgeDotPulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0.5); }
       50%      { box-shadow: 0 0 0 4px rgba(29, 252, 159, 0); }
@@ -804,7 +810,7 @@
       to { left: 100%; }
     }
 
-    /* ── REDUCED MOTION ── */
+    /* ── REDUCED MOTION ── (temporarily disabled for debugging)
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -813,7 +819,7 @@
       }
       .pipeline-step { opacity: 1; transform: none; }
       .fade-in { opacity: 1; transform: none; }
-    }
+    } */
 
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
