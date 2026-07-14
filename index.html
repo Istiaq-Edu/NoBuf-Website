@@ -1047,7 +1047,7 @@
     <div class="hero-badge">
       <div class="hero-badge-dot"></div>
       <span>Open Source</span>
-      <span class="hero-badge-version" id="hero-version">Beta</span>
+      <span class="hero-badge-version" id="hero-version">v0.7.0</span>
     </div>
     <h1>Video streaming<br>with <span>zero buffering</span></h1>
     <p>An open-source desktop player that streams video from Telegram channels with continuous prebuffering — so playback never stalls, even on seeks.</p>
@@ -1067,7 +1067,7 @@
   </div>
 </section>
 
-<!-- ── PROMO BANNER ── -->
+<!-- ── PROMO BANNER / QUICK TIP ── -->
 <style>
   .promo-banner {
     padding: 20px 0;
@@ -1120,13 +1120,12 @@
   <div class="container">
     <div class="promo-inner">
       <div class="promo-item">
-        <span class="promo-label">🚀 Free AI Cloud</span>
-        <a href="https://agentrouter.org/register?aff=rBMj" target="_blank">Sign up at AgentRouter.org</a> and get <strong>$150 free balance</strong> to run AI agents, LLMs, and inference workloads.
-        <br><span class="promo-warn">⚠️ Use an older GitHub account to qualify for the $150 bonus. 🎁 This referral link grants an extra $25.</span>
+        <span class="promo-label">💡 Quick Tip</span>
+        Already have a Telegram channel? Append <code>[NB]</code> to its name — NoBuf detects it instantly. No re-upload needed.
       </div>
       <div class="promo-item">
-        <span class="promo-label">📂 Quick Tip</span>
-        Already have a Telegram channel? Append <code>[NB]</code> to its name — NoBuf detects it instantly. No re-upload needed.
+        <span class="promo-label">📡 Public Channels</span>
+        Paste any <code>t.me/...</code> link to preview and join public channels — browse, forward, or stream directly. Channels named <code>[NB-PUB]</code> auto-sync.
       </div>
     </div>
   </div>
@@ -1194,7 +1193,7 @@
         </div>
         <div class="pipeline-content">
           <h4>First frame in ~200ms</h4>
-          <p>Fetches <code>512 KB</code> from Telegram — just enough for mp4box.js to demux the MP4 init segments and feed them to MediaSource SourceBuffers.</p>
+          <p>Fetches <code>512 KB</code> from Telegram — just enough to demux the container's init segments and feed them to MediaSource SourceBuffers.</p>
         </div>
       </div>
       <div class="pipeline-step">
@@ -1203,7 +1202,7 @@
           <div class="pipeline-line"></div>
         </div>
         <div class="pipeline-content">
-          <h4>Progressive prebuffer — next 60 seconds</h4>
+          <h4>Progressive prebuffer — next 180 seconds</h4>
           <p>Fragment sizes ramp up: <code>512KB → 1MB → 2MB → 4MB → 8MB</code>. Starts fast, then saturates your bandwidth. 3 parallel TCP connections to Telegram's data center.</p>
         </div>
       </div>
@@ -1249,18 +1248,24 @@
         </thead>
         <tbody>
           <tr><td>Progressive fragments</td><td class="mono">512KB → 8MB</td><td>First frame in ~200ms, then saturate bandwidth</td></tr>
-          <tr><td>60s prebuffer window</td><td>Continuous fetch ahead of playback</td><td>You never outrun the buffer</td></tr>
+          <tr><td>180s prebuffer window</td><td>Continuous fetch ahead of playback</td><td>You never outrun the buffer</td></tr>
+          <tr><td>Disk-backed stream cache</td><td class="mono">.dat + .meta</td><td>Instant replay, survives app restarts</td></tr>
           <tr><td>3× parallel TCP pool</td><td>Split file across 3 connections</td><td>~3× bandwidth vs single-threaded</td></tr>
           <tr><td>Download coordinator</td><td>Deduplicate overlapping ranges</td><td>No wasted bandwidth on concurrent seeks</td></tr>
           <tr><td>Seek debounce</td><td class="mono">500ms</td><td>Arrow-key spam doesn't spawn 15 downloads</td></tr>
-          <tr><td>VBR byte→time table</td><td>mp4box calibration points</td><td>Accurate seek for variable bitrate content</td></tr>
-          <tr><td>Buffer cap + backpressure</td><td class="mono">50MB / 2min</td><td>Prevents memory bloat on long videos</td></tr>
+          <tr><td>VBR byte→time calibration</td><td>cue-index anchors + seek cluster bytes</td><td>Accurate green bar for variable bitrate</td></tr>
+          <tr><td>Keyframe-boundary refills</td><td>MKV refills stop on exact keyframe</td><td>Zero-overlap GOP abutment → no decode crashes</td></tr>
+          <tr><td>Source ID isolation</td><td>Playback / thumbnail / tail tagged separately</td><td>Thumbnail pipeline can't cancel player downloads</td></tr>
+          <tr><td>Dynamic cold-start overlay</td><td>Gates playback on real buffered runway</td><td>No spinner-then-stall</td></tr>
+          <tr><td>Pause/resume prefetch</td><td>Paused stays paused, prebuffer persists</td><td>"Paused means paused" — only resume unpauses</td></tr>
+          <tr><td>20MB buffer cap + backpressure</td><td class="mono">20MB / 80MB public</td><td>Prevents memory bloat on long videos</td></tr>
+          <tr><td>Windows cache protection</td><td class="mono">no FILE_SHARE_DELETE</td><td>Antivirus can't delete cache mid-stream</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="tech-note fade-in">
-      <strong>⚠ Format Support:</strong> The MSE prebuffer pipeline currently supports <strong>.mp4</strong> files only. Support for <strong>.ts</strong> (MPEG-TS) and <strong>.mkv</strong> containers is planned. Non-MP4 video files fall back to direct download playback.
+      <strong>⚠ Format Support:</strong> The MSE engine streams <strong>.mp4</strong> (mp4box.js), <strong>.ts / .m2ts / .mts</strong> (mpegts.js), and <strong>.mkv / .webm</strong> (Mediabunny transmuxer) — all with seeking and a VBR-accurate progress bar. H.264 MKV seeks natively by keyframe; HEVC MKV is remuxed server-side via ffmpeg. VP9/AV1 in MKV/WebM play through the native engine.
     </div>
   </div>
 </section>
@@ -1275,12 +1280,12 @@
       <div class="feature-card fade-in">
         <div class="feature-icon">▶️</div>
         <h4>MSE Video Player</h4>
-        <p>Media Source Extensions with mp4box.js demuxing. Progressive fragment sizing for instant first frame.</p>
+        <p>Media Source Extensions with format-aware routing (MP4 / TS / MKV / WebM). Progressive fragment sizing for instant first frame.</p>
       </div>
       <div class="feature-card fade-in">
         <div class="feature-icon">🔄</div>
         <h4>Continuous Prebuffer</h4>
-        <p>60-second look-ahead downloads while you watch. Playback never stalls.</p>
+        <p>180-second look-ahead downloads while you watch. Playback never stalls, even on seeks.</p>
       </div>
       <div class="feature-card fade-in">
         <div class="feature-icon">💾</div>
@@ -1288,19 +1293,44 @@
         <p>Byte-range tracking with gap detection. Cached videos replay instantly.</p>
       </div>
       <div class="feature-card fade-in">
+        <div class="feature-icon">🔁</div>
+        <h4>Background Cache</h4>
+        <p>Close the player — the full video keeps downloading. Next open is instant from cache.</p>
+      </div>
+      <div class="feature-card fade-in">
         <div class="feature-icon">🎞️</div>
         <h4>Video Preview</h4>
         <p>Sprite sheet scrub previews for frame-accurate seeking. See before you seek.</p>
       </div>
       <div class="feature-card fade-in">
-        <div class="feature-icon">⚙️</div>
-        <h4>Player Settings</h4>
-        <p>Dedicated video player controls — playback speed, video fit, brightness, rotation, and loop mode.</p>
+        <div class="feature-icon">🎵</div>
+        <h4>Audio Playback</h4>
+        <p>Built-in audio player with speed control for music and podcasts.</p>
       </div>
       <div class="feature-card fade-in">
-        <div class="feature-icon">📊</div>
-        <h4>Bandwidth Management</h4>
-        <p>Per-session speed limits for streaming and downloads. Daily bandwidth tracking with configurable limits.</p>
+        <div class="feature-icon">⏸️</div>
+        <h4>Pause / Resume Prefetch</h4>
+        <p>Paused stays paused — prebuffer persists through seeks. Only the resume button unpauses.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🟢</div>
+        <h4>VBR-Accurate Bar</h4>
+        <p>Green prebuffer bar calibrated from real keyframe cue anchors, not linear estimates.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📡</div>
+        <h4>Public Channels</h4>
+        <p>Paste any <code>t.me/...</code> link to preview and join. Browse, forward, or stream — all without leaving NoBuf.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📲</div>
+        <h4>QR Login</h4>
+        <p>Scan a QR code with your Telegram app — done. No typing phone numbers or codes.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🖱️</div>
+        <h4>External Drag-Drop</h4>
+        <p>Drag files directly from Windows Explorer into NoBuf to upload instantly.</p>
       </div>
       <div class="feature-card fade-in">
         <div class="feature-icon">📁</div>
@@ -1317,6 +1347,26 @@
         <div class="feature-icon">📄</div>
         <h4>PDF Viewer</h4>
         <p>Infinite-scroll PDF rendering with zoom and page navigation built in.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🖼️</div>
+        <h4>Image Preview</h4>
+        <p>Inline thumbnails and a full-resolution viewer for photos and artwork.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">⚙️</div>
+        <h4>Player Settings</h4>
+        <p>Dedicated controls — playback speed, video fit, brightness, rotation, and loop mode.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📊</div>
+        <h4>Bandwidth Management</h4>
+        <p>Per-session speed limits for streaming and downloads. Daily bandwidth tracking with configurable caps.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🗜️</div>
+        <h4>Archive Extraction</h4>
+        <p>Browse and extract entries from ZIP / RAR / 7Z archives without leaving the app.</p>
       </div>
       <div class="feature-card fade-in">
         <div class="feature-icon">🤖</div>
@@ -1368,6 +1418,14 @@
       <div class="screenshot-item">
         <img src="assets/download-from-cache-in-video-player.png" alt="NoBuf — Cache Playback" loading="lazy">
         <span class="screenshot-label">Cache Playback</span>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/down-up.png" alt="NoBuf — Download / Upload" loading="lazy">
+        <span class="screenshot-label">Download / Upload</span>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/auth-1.png" alt="NoBuf — Authentication / QR Login" loading="lazy">
+        <span class="screenshot-label">Authentication</span>
       </div>
       <div class="screenshot-item">
         <img src="assets/settings.png" alt="NoBuf — Settings" loading="lazy">
@@ -1448,7 +1506,7 @@
 <footer>
   <div class="container">
     <div class="footer-left">
-      © 2025 NoBuf. MIT License. Not affiliated with Telegram FZ-LLC.
+      © 2025–2026 NoBuf. MIT License. Not affiliated with Telegram FZ-LLC.
     </div>
     <div class="footer-links">
       <a href="https://github.com/Istiaq-Edu/NoBuf" target="_blank">GitHub</a>
@@ -1527,8 +1585,8 @@
       const isAppleSilicon = /Mac/.test(navigator.userAgent) &&
         (navigator.maxTouchPoints > 1 || /Apple/.test(navigator.vendor));
       const macUrl = isAppleSilicon
-        ? findAsset(['aarch64.dmg', '_arm64.dmg', 'x64.dmg'])
-        : findAsset(['x64.dmg', 'aarch64.dmg']);
+        ? findAsset(['aarch64.app', 'aarch64.dmg', '_arm64', 'arm64'])
+        : findAsset(['x64.app', 'x64.dmg', 'intel', 'x86_64']);
       const macEl = document.getElementById('dl-mac');
       if (macUrl && macEl) macEl.href = macUrl;
 
