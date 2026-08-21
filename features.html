@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features · NoBuf</title>
+  <meta name="description" content="A seek engine that never freezes, MKV/TS/HEVC handled smartly, embedded subtitles with OpenSubtitles, mid-scene audio switching, a real library — and a local REST API.">
+  <link rel="canonical" href="https://istiaq-edu.github.io/NoBuf-Website/features.html">
+  <meta property="og:url" content="https://istiaq-edu.github.io/NoBuf-Website/features.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NoBuf">
+  <meta property="og:title" content="NoBuf Features">
+  <meta property="og:description" content="Instant playback, a real seek engine, built-in subtitles and dual-audio, over your existing Telegram storage.">
+  <meta property="og:image" content="https://istiaq-edu.github.io/NoBuf-Website/assets/social-card.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NoBuf Features">
+  <meta name="twitter:description" content="Instant playback, a real seek engine, built-in subtitles and dual-audio, over your existing Telegram storage.">
+  <meta name="twitter:image" content="https://istiaq-edu.github.io/NoBuf-Website/assets/social-card.jpg">
+  <meta name="theme-color" content="#0a0a0b">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "NoBuf",
+    "operatingSystem": "Windows, macOS, Linux",
+    "applicationCategory": "MultimediaApplication",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "softwareVersion": "1.0.0"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="banner-wrap" data-banner>
+  <div class="banner" role="region" aria-label="Product tips">
+    <div class="banner-inner">
+      <p class="banner-tip">Tip: rename any channel with <b>[NB]</b> and it appears as a NoBuf folder instantly</p>
+      <p class="banner-tip" hidden>Tip: paste a <b>t.me</b> link to browse any public channel like a file library</p>
+      <button class="banner-dismiss" aria-label="Dismiss tips">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<header class="nav">
+  <nav class="nav-inner" aria-label="Main">
+    <a class="nav-brand" href="index.html"><img src="assets/logo-small.webp" alt="" width="26" height="26"> NoBuf</a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+    </button>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link active" href="features.html" aria-current="page">Features</a>
+      <a class="nav-link" href="download.html">Download</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="https://github.com/Istiaq-Edu/NoBuf" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <span class="nav-spacer"></span>
+    <span class="nav-version tnum" data-version-slot>v1.0.0</span>
+    <a class="btn btn-primary nav-cta" href="download.html">Download</a>
+  </nav>
+</header>
+
+<div class="progress" aria-hidden="true"><span></span></div>
+
+<main id="main">
+
+  <!-- Page hero -->
+  <section class="section-tight" style="padding-bottom: 0;">
+    <div class="container">
+      <p class="mono-label reveal">Features</p>
+      <h1 class="h2 reveal mt-8" style="font-size: clamp(34px, 4.6vw, 56px); letter-spacing: -0.03em;">
+        Everything a media library should have done years ago.
+      </h1>
+      <p class="lead reveal mt-16" style="max-width: 720px;">
+        Built on your existing Telegram storage. Nothing to migrate, nothing to re-upload.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ WATCH ============ -->
+  <section class="section" aria-labelledby="watch-h">
+    <div class="container">
+      <p class="mono-label reveal mb-16" id="watch-h">Watch</p>
+
+      <!-- Seek engine -->
+      <div class="split">
+        <div class="reveal">
+          <h2 class="h3">A seek engine, not a progress bar</h2>
+          <ul role="list" class="mt-16" style="display:grid; gap:12px;">
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Keyframe indexes grow while you watch</b><span>The app maps time to bytes server-side as the file arrives</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>VBR-aware seeking</b><span>Variable-bitrate files land on the right frame, not the wrong scene</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Cue-less MKVs get bisection</b><span>No seek index? NoBuf probes the file itself. Seconds instead of minute-long freezes</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Hover thumbnails everywhere</b><span>Frame previews even over parts you haven't buffered</span></div>
+            </li>
+          </ul>
+          <p class="small mt-16" style="color: var(--text-mute);">The seek bar tells the truth: buffered ranges, disk cache and thumbnail coverage are separate layers.</p>
+        </div>
+        <figure class="reveal">
+          <div class="shot-frame">
+            <div class="shot-bar"><span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="shot-title">hover scrubbing</span></div>
+            <img src="assets/preview-thumbnail.webp" alt="Hover-scrub thumbnail with timestamp over the seek bar while a 4K file plays" loading="lazy" width="1202" height="832">
+          </div>
+        </figure>
+      </div>
+
+      <!-- Formats -->
+      <div class="split mt-24" style="margin-top: clamp(64px, 8vw, 110px);">
+        <figure class="reveal">
+          <div class="shot-frame">
+            <div class="shot-bar"><span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="shot-title">playback tiers</span></div>
+            <img src="assets/download-from-cache-in-video-player.webp" alt="Player streaming directly with a live cache pill showing download speed" loading="lazy" width="1202" height="832">
+          </div>
+        </figure>
+        <div class="reveal">
+          <h2 class="h3">Plays everything. Smartly.</h2>
+          <p class="mt-16">MP4, WebM, MKV and TS play by streaming, with no download-first wait. When your browser genuinely can't decode something,
+             NoBuf detects it and remuxes or hardware-transcodes on the fly:</p>
+          <div class="table-scroll mt-16">
+            <table class="data">
+              <thead><tr><th scope="col">Content</th><th scope="col">What happens</th></tr></thead>
+              <tbody>
+                <tr><td>H.264 / VP9 / AAC</td><td><span class="t-yes">Streams directly</span></td></tr>
+                <tr><td>MKV, TS containers</td><td><span class="t-yes">Remuxed live.</span> No re-encode, instant start</td></tr>
+                <tr><td>HEVC 8-bit (if your GPU plays it)</td><td><span class="t-yes">Copied stream</span>, zero quality loss</td></tr>
+                <tr><td>HEVC 10/12-bit, HDR</td><td><span class="t-partial">Hardware transcode</span> (Intel QSV when available)</td></tr>
+                <tr><td>Old MP4s (metadata at end)</td><td><span class="t-yes">Virtual faststart:</span> plays instantly, downloads nothing extra</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="callout mt-16">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5v.1"/></svg>
+            Heavy HEVC tiers route through a transcode step, so they may take a moment to start. Honesty over marketing.
+          </p>
+        </div>
+      </div>
+
+      <!-- Subtitles -->
+      <div class="split mt-24" style="margin-top: clamp(64px, 8vw, 110px);">
+        <div class="reveal">
+          <h2 class="h3">Subtitles, done properly</h2>
+          <ul role="list" class="mt-16" style="display:grid; gap:12px;">
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Embedded tracks extract themselves</b><span>SRT, ASS/SSA (rendered with libass incl. bundled fonts), WebVTT, mov_text</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Extraction never interrupts playback</b><span>It reads from what's already cached near your position</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Full styling controls</b><span>Size, position and sync nudges, remembered per file</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Built-in OpenSubtitles search</b><span>Hash-matched even for nameless files; uses your own free API key</span></div>
+            </li>
+          </ul>
+          <p class="callout mt-16">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5v.1"/></svg>
+            Image-based formats (PGS, VobSub, DVB) are detected but not supported yet; text formats only.
+          </p>
+        </div>
+        <figure class="reveal">
+          <div class="shot-frame">
+            <div class="shot-bar"><span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="shot-title">subtitle &amp; player settings</span></div>
+            <img src="assets/video-player-settings.webp" alt="Player settings panel with playback, display, behavior, bandwidth and video info sections" loading="lazy" width="1202" height="832">
+          </div>
+        </figure>
+      </div>
+
+      <!-- Audio -->
+      <div class="section-tight reveal" style="margin-top: clamp(48px, 6vw, 80px); max-width:100%; overflow-x:clip;">
+        <div class="h4 mb-16" style="display:flex; align-items:center; gap:12px;">
+          <span class="card-icon" style="margin-bottom:0;">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 14v-4a6 6 0 0112 0v4"/><rect x="3" y="12" width="4" height="5" rx="1.5"/><rect x="13" y="12" width="4" height="5" rx="1.5"/></svg>
+          </span>
+          Dual-audio? Switch languages mid-scene.
+        </div>
+          <p>Anime with Japanese and English tracks, films with director's commentary: pick another audio track and playback continues
+             from the exact position. No reload, no lost seconds. Tracks are listed per file; unsupported ones are greyed out honestly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ORGANIZE ============ -->
+  <section class="section" aria-labelledby="organize-h" style="background: var(--bg-1); border-block: 1px solid var(--line-subtle);">
+    <div class="container">
+      <p class="mono-label reveal mb-16" id="organize-h">Organize</p>
+      <div class="section-head reveal">
+        <h2 class="h2">A library, not a chat scrollback</h2>
+      </div>
+      <div class="card-grid grid-3" data-stagger>
+        <article class="card reveal" data-spot>
+          <div class="card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6a2 2 0 012-2h3l2 2h7a1 1 0 011 1v8a2 2 0 01-2 2H5a2 2 0 01-2-2V6z"/></svg></div>
+          <h3 class="h4">Folders are real channels</h3>
+          <p>Rename any channel with <b class="accent-span">[NB]</b> and it imports itself. Reinstall tomorrow, log in, everything's back, because your library was always Telegram.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg></div>
+          <h3 class="h4">Groups &amp; public channels</h3>
+          <p>Color-coded, drag-to-reorder folder groups. Paste any t.me link to browse a public channel as a searchable grid and forward files into your folders.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3v9m0 0L6.5 8.5M10 12l3.5-3.5M4 16h12"/></svg></div>
+          <h3 class="h4">Get files in any way</h3>
+          <p>Drag files or whole folders from Explorer, paste a direct URL and NoBuf fetches it, or browse zip archives and extract single entries without downloading them whole.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="5.5"/><path d="M13.5 13.5L17 17"/></svg></div>
+          <h3 class="h4">Find things instantly</h3>
+          <p>Client-side search with debounce, sort by name/size/date, multi-select, virtualized grids that stay smooth past thousands of files.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="M3 8h14"/></svg></div>
+          <h3 class="h4">Previews for everything</h3>
+          <p>Images lazy-load real thumbnails; PDFs, audio and video open in dedicated viewers. Copy a t.me link from any file's context menu.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12V6a2 2 0 012-2h8a2 2 0 012 2v6M4 12a2 2 0 002 2h8a2 2 0 002-2M4 12H3m13 0h1M8 17h4"/></svg></div>
+          <h3 class="h4">Your OS, your theme</h3>
+          <p>Windows, macOS (Intel &amp; Apple silicon), Linux. Seven built-in themes including full light mode, plus a custom theme editor.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ POWER ============ -->
+  <section class="section" aria-labelledby="power-h">
+    <div class="container">
+      <p class="mono-label reveal mb-16" id="power-h">Power</p>
+      <div class="section-head reveal">
+        <h2 class="h2">Scriptable down to the bytes</h2>
+      </div>
+
+      <div class="split">
+        <div class="reveal">
+          <h3 class="h4">Local REST API (opt-in)</h3>
+          <p class="mt-8">Enable it in Settings and point mpv, VLC, curl or your own scripts at your library. Binds to localhost only,
+             authenticated with a generated key stored as a hash.</p>
+          <div class="codeblock mt-16">
+            <div class="codeblock-head">
+              <span class="mono-label">example</span>
+              <button class="code-copy" data-copy type="button"><span>copy</span></button>
+            </div>
+            <pre><code><span class="c-com"># list your library</span>
+<span class="c-key">curl</span> http://127.0.0.1:8550/api/v1/files \
+  -H <span class="c-str">"X-API-Key: YOUR_KEY"</span>
+
+<span class="c-com"># stream any file with Range support</span>
+mpv http://127.0.0.1:8550/api/v1/files/<span class="c-str">42</span>/download \
+  --header=<span class="c-str">"X-API-Key: YOUR_KEY"</span></code></pre>
+          </div>
+          <p class="small mt-8" style="color: var(--text-mute);">
+            Endpoints: <code>/api/v1/health</code> · <code>/files</code> · <code>/files/{id}</code> · <code>/files/{id}/download</code>
+          </p>
+        </div>
+        <div class="reveal">
+          <h3 class="h4">Playback control</h3>
+          <div class="table-scroll mt-8">
+            <table class="data" aria-label="Keyboard shortcuts">
+              <thead><tr><th scope="col">Keys</th><th scope="col">Action</th></tr></thead>
+              <tbody>
+                <tr><td><kbd class="key">Space</kbd> / <kbd class="key">K</kbd></td><td>Play / pause</td></tr>
+                <tr><td><kbd class="key">←</kbd> <kbd class="key">→</kbd></td><td>Seek back / forward</td></tr>
+                <tr><td><kbd class="key">J</kbd> <kbd class="key">L</kbd></td><td>Seek back / forward</td></tr>
+                <tr><td><kbd class="key">Shift</kbd>+<kbd class="key">←</kbd>/<kbd class="key">→</kbd></td><td>Previous / next file</td></tr>
+                <tr><td><kbd class="key">↑</kbd> <kbd class="key">↓</kbd></td><td>Volume ±10%</td></tr>
+                <tr><td><kbd class="key">,</kbd> <kbd class="key">.</kbd></td><td>Speed −/+ 0.25× (0.25–4×)</td></tr>
+                <tr><td><kbd class="key">&lt;</kbd> <kbd class="key">&gt;</kbd></td><td>Halve / double speed</td></tr>
+                <tr><td><kbd class="key">C</kbd></td><td>Toggle subtitles</td></tr>
+                <tr><td><kbd class="key">M</kbd> · <kbd class="key">F</kbd> · <kbd class="key">Esc</kbd></td><td>Mute · fullscreen · close</td></tr>
+                <tr><td><kbd class="key">Ctrl</kbd>+<kbd class="key">F</kbd></td><td>Search the library</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small mt-8" style="color: var(--text-mute);">Plus bandwidth limiters with presets, skip-step customization, PiP, loop, and every control-bar chip is draggable to where you want it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRUST ============ -->
+  <section class="section-tight" aria-labelledby="trust-h" style="background: var(--bg-1); border-block: 1px solid var(--line-subtle);">
+    <div class="container">
+      <p class="mono-label reveal mb-16" id="trust-h">Trust</p>
+      <div class="trust-strip" data-stagger>
+        <div class="trust-item reveal">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="8" width="12" height="8" rx="2"/><path d="M7 8V6a3 3 0 016 0v2"/></svg>
+          <div><b>Local-first architecture</b><span>All servers bind to 127.0.0.1; the UI sandbox allows only localhost. No accounts with us, no telemetry.</span></div>
+        </div>
+        <div class="trust-item reveal">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2l6 3v5c0 4-2.5 6.5-6 8-3.5-1.5-6-4-6-8V5l6-3z"/><path d="M7.5 10l1.8 1.8L13 8.2"/></svg>
+          <div><b>Signed updates</b><span>Minisign-verified releases, delivered via GitHub Releases.</span></div>
+        </div>
+        <div class="trust-item reveal">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h12M4 10h12M4 15h7"/></svg>
+          <div><b>Tested like it matters</b><span>Over a thousand automated frontend tests plus a Rust suite gate every change.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="cta-band">
+    <div class="cta-band-inner container reveal">
+      <h2 class="h2">Every feature above is in the free download.</h2>
+      <div class="btn-row mt-24" style="justify-content:center;">
+        <a class="btn btn-primary btn-lg" href="download.html">Download NoBuf <span class="tnum" data-version-slot>v1.0.0</span></a>
+        <a class="btn btn-ghost btn-lg" href="faq.html">Read the FAQ</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <p class="footer-brand"><img src="assets/logo-small.webp" alt="" width="24" height="24"> NoBuf</p>
+      <p class="footer-note">Turns your Telegram channels into an instant-streaming video library. Free and open source under MIT.</p>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Product</p>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="download.html">Download</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Project</p>
+      <ul>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank" rel="noopener">Releases</a></li>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf/blob/dev/LICENSE" target="_blank" rel="noopener">License</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Learn</p>
+      <ul>
+        <li><a href="faq.html#accounts">Accounts &amp; privacy</a></li>
+        <li><a href="faq.html#using">Using NoBuf</a></li>
+        <li><a href="index.html#why">Why not just Telegram</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-base">
+    <div class="footer-base-inner">
+      <span>© 2025–2026 NoBuf · MIT License</span>
+      <span>Not affiliated with Telegram FZ-LLC</span>
+    </div>
+  </div>
+</footer>
+
+<script src="shared.js" defer></script>
+</body>
+</html>

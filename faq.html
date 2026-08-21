@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ · NoBuf</title>
+  <meta name="description" content="Account safety, API keys, privacy, offline behavior, formats, subtitles, ports and updates — answered honestly.">
+  <link rel="canonical" href="https://istiaq-edu.github.io/NoBuf-Website/faq.html">
+  <meta property="og:url" content="https://istiaq-edu.github.io/NoBuf-Website/faq.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NoBuf">
+  <meta property="og:title" content="NoBuf FAQ">
+  <meta property="og:description" content="Account safety, API keys, privacy, formats, subtitles, ports and updates — answered honestly.">
+  <meta property="og:image" content="https://istiaq-edu.github.io/NoBuf-Website/assets/social-card.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NoBuf FAQ">
+  <meta name="twitter:description" content="Account safety, API keys, privacy, formats, subtitles, ports and updates — answered honestly.">
+  <meta name="twitter:image" content="https://istiaq-edu.github.io/NoBuf-Website/assets/social-card.jpg">
+  <meta name="theme-color" content="#0a0a0b">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Is my Telegram account at risk?",
+        "acceptedAnswer": { "@type": "Answer", "text": "NoBuf logs you in through Telegram's own official flows — phone, code, QR and 2FA. Your session lives locally on your machine. NoBuf never sees your cloud password: the 2FA step happens between you and Telegram." } },
+      { "@type": "Question", "name": "Do I need a developer account?",
+        "acceptedAnswer": { "@type": "Answer", "text": "You need a one-time login at my.telegram.org — the built-in wizard opens it and fills the app-creation form for you automatically. Your API keys are stored locally." } },
+      { "@type": "Question", "name": "Does NoBuf phone home?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No telemetry or analytics exist in the app. Outbound connections are limited to: Telegram's servers (the actual function), api.opensubtitles.com only when you search subtitles, one optional ffmpeg download, and GitHub for update checks." } }
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="banner-wrap" data-banner>
+  <div class="banner" role="region" aria-label="Product tips">
+    <div class="banner-inner">
+      <p class="banner-tip">Tip: rename any channel with <b>[NB]</b> and it appears as a NoBuf folder instantly</p>
+      <p class="banner-tip" hidden>Tip: paste a <b>t.me</b> link to browse any public channel like a file library</p>
+      <button class="banner-dismiss" aria-label="Dismiss tips">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<header class="nav">
+  <nav class="nav-inner" aria-label="Main">
+    <a class="nav-brand" href="index.html"><img src="assets/logo-small.webp" alt="" width="26" height="26"> NoBuf</a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+    </button>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="features.html">Features</a>
+      <a class="nav-link" href="download.html">Download</a>
+      <a class="nav-link active" href="faq.html" aria-current="page">FAQ</a>
+      <a class="nav-link" href="https://github.com/Istiaq-Edu/NoBuf" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <span class="nav-spacer"></span>
+    <span class="nav-version tnum" data-version-slot>v1.0.0</span>
+    <a class="btn btn-primary nav-cta" href="download.html">Download</a>
+  </nav>
+</header>
+
+<div class="progress" aria-hidden="true"><span></span></div>
+
+<main id="main">
+  <section class="section-tight" style="padding-bottom: clamp(32px,4vw,56px);">
+    <div class="container">
+      <h1 class="h2 reveal" style="font-size: clamp(34px, 4.6vw, 56px); letter-spacing: -0.03em;">
+        Fair questions, straight answers.
+      </h1>
+      <p class="lead reveal mt-16" style="max-width: 680px;">
+        Including the ones marketing pages usually skip.
+      </p>
+    </div>
+  </section>
+
+  <!-- Accounts & privacy -->
+  <section class="section-tight" id="accounts" style="padding-top: 0;" aria-labelledby="accounts-h">
+    <div class="container-wide">
+      <p class="mono-label reveal mb-16" id="accounts-h">Accounts &amp; privacy</p>
+      <div class="faq-group" data-stagger>
+
+        <details class="faq reveal" name="faq-accounts" open>
+          <summary>Is my Telegram account at risk?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>NoBuf logs you in through Telegram's own official flows: phone + code, QR scan, two-factor password. Your session is stored
+               locally on your machine with restrictive file permissions.</p>
+            <p class="mt-8">One thing worth knowing: logging into third-party apps can trigger Telegram's own security notifications to your other devices.
+               That's Telegram protecting you. Expected, not a red flag about NoBuf.</p>
+            <p class="mt-8">What NoBuf never sees: your 2FA "cloud password" stays between you and Telegram even during login.</p>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-accounts">
+          <summary>Do I need a developer account? Why API keys?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>Every third-party Telegram client needs an API ID/hash pair from my.telegram.org. That's Telegram's requirement, not ours.</p>
+            <p class="mt-8">The difference: NoBuf's wizard opens my.telegram.org in a built-in window and fills the app-creation form for you,
+               then hands the keys straight to the app. You log in once yourself; the paperwork automates away. Keys live on your machine.</p>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-accounts">
+          <summary>Does NoBuf phone home?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>The complete list of things NoBuf can talk to:</p>
+            <ul>
+              <li><strong>Telegram's servers</strong>: fetching your files. The whole point.</li>
+              <li><strong>api.opensubtitles.com</strong>: only when you search subtitles, using your own free key.</li>
+              <li><strong>GitHub Releases</strong>: update checks and downloads.</li>
+              <li><strong>One optional ffmpeg download</strong>: only if your system lacks it and a format needs it.</li>
+            </ul>
+            <p class="mt-8">That's it. No analytics, no crash reporters, no accounts with us. The app's own servers bind to 127.0.0.1 and its
+               UI sandbox can't reach anything but localhost.</p>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-accounts">
+          <summary>Will it work offline?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>NoBuf is a Telegram client, so new streams need Telegram reachable. What caching does give you:</p>
+            <ul>
+              <li>Everything already downloaded in this session replays instantly without re-fetching.</li>
+              <li>The download-ahead keeps working while you watch, so brief dropouts don't interrupt playback.</li>
+              <li>Extracted subtitle tracks persist across restarts even though video cache clears each launch.</li>
+            </ul>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-accounts" id="privacy">
+          <summary>Does the cache fill my disk?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>The stream cache wipes itself on every launch, so you'll never dig gigabytes out of AppData. Closing a half-watched video offers
+               three honest choices: continue downloading the rest in the background, keep what's cached for instant replay this session, or discard it.</p>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-accounts">
+          <summary>What ports does it open? Is something listening on my LAN?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>Nothing listens on your network. All local servers bind strictly to 127.0.0.1: the streaming server on port 14201 and, if you
+               enable it in Settings, the REST API on a port you choose. The REST API requires an API key which is stored hashed and compared
+               in constant time. It's off by default.</p>
+          </div></div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Using NoBuf -->
+  <section class="section-tight" id="using" aria-labelledby="using-h">
+    <div class="container-wide">
+      <p class="mono-label reveal mb-16" id="using-h">Using NoBuf</p>
+      <div class="faq-group" data-stagger>
+
+        <details class="faq reveal" name="faq-using">
+          <summary>Why not just use the Telegram app?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>For MP4s, Telegram's built-in player is genuinely fine. NoBuf earns its keep on everything else:</p>
+            <ul>
+              <li>MKV, TS and HEVC files play by streaming instead of demanding a full download first.</li>
+              <li>A real seek engine: jump anywhere in seconds, frame previews while scrubbing, no index required.</li>
+              <li>Embedded subtitles render properly, OpenSubtitles search is built in.</li>
+              <li>Dual-audio files switch languages mid-scene.</li>
+              <li>Your channels become a browsable library with folders, groups and search.</li>
+            </ul>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-using">
+          <summary>Which subtitle formats work?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p><strong>Yes:</strong> SRT/SubRip, ASS/SSA (rendered with libass, including fonts embedded in the MKV), WebVTT and mov_text.
+               You get size, position and sync sliders, and per-file track memory.</p>
+            <p class="mt-8"><strong>Not yet:</strong> image-based formats like PGS (Blu-ray), VobSub and DVB are detected but can't be extracted or rendered.
+               We'd rather say that than pretend.</p>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-using">
+          <summary>What formats play? What about 4K HEVC?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <ul>
+              <li><strong>H.264/VP9/AAC in MP4/WebM:</strong> streams directly.</li>
+              <li><strong>MKV and TS:</strong> remuxed live: instant start, no quality change.</li>
+              <li><strong>HEVC your GPU can decode:</strong> passed through untouched.</li>
+              <li><strong>HEVC 10-bit / HDR:</strong> hardware-transcoded (Intel QuickSync when available): plays everywhere, may take a moment to start.</li>
+            </ul>
+            <p class="mt-8">Old recordings with metadata at the end of the file get virtually faststarted: they play immediately without downloading anything extra.</p>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-using">
+          <summary>How do I import my existing channels?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>Rename any private channel to include <code>[NB]</code> and it appears as a folder on next launch, no re-upload, and works across devices since
+               the tag lives in the channel title itself. Public channels join via their t.me link and browse as searchable grids. Folders can be grouped
+               with colored, reorderable tabs.</p>
+          </div></div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Updates & install -->
+  <section class="section-tight" id="updates" aria-labelledby="updates-h" style="background: var(--bg-1); border-block: 1px solid var(--line-subtle);">
+    <div class="container-wide">
+      <p class="mono-label reveal mb-16" id="updates-h">Updates &amp; install</p>
+      <div class="faq-group" data-stagger>
+
+        <details class="faq reveal" name="faq-updates">
+          <summary>How do updates work? Are installs safe?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>NoBuf checks GitHub Releases and verifies every download against a minisign public key pinned inside the app before installing.
+               A tampered package can't pass. Updates apply with one click.</p>
+            <p class="mt-8">Windows note: SmartScreen may show "unknown publisher" on first run because the installer isn't EV-code-signed. That's a
+               reputation system, not a virus verdict. Use More info → Run anyway. The update channel itself remains signature-verified.</p>
+          </div></div>
+        </details>
+
+        <details class="faq reveal" name="faq-updates">
+          <summary>Does it need ffmpeg?
+            <svg class="faq-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>
+          </summary>
+          <div class="faq-body"><div>
+            <p>Maybe not at all: a large share of files stream through NoBuf's built-in remuxer with zero external tools. When a format does need ffmpeg,
+               NoBuf finds an existing installation first; otherwise it fetches a minimal build once into its own data folder and validates the binary
+               actually has the encoders it needs. Nothing to configure.</p>
+          </div></div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-band">
+    <div class="cta-band-inner container reveal">
+      <h2 class="h2">Convinced? It's free.</h2>
+      <div class="btn-row mt-24" style="justify-content:center;">
+        <a class="btn btn-primary btn-lg" href="download.html">Download NoBuf <span class="tnum" data-version-slot>v1.0.0</span></a>
+        <a class="btn btn-ghost btn-lg" href="features.html">Browse features</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <p class="footer-brand"><img src="assets/logo-small.webp" alt="" width="24" height="24"> NoBuf</p>
+      <p class="footer-note">Turns your Telegram channels into an instant-streaming video library. Free and open source under MIT.</p>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Product</p>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="download.html">Download</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Project</p>
+      <ul>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank" rel="noopener">Releases</a></li>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf/blob/dev/LICENSE" target="_blank" rel="noopener">License</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Topics</p>
+      <ul>
+        <li><a href="#accounts">Accounts &amp; privacy</a></li>
+        <li><a href="#using">Formats &amp; subtitles</a></li>
+        <li><a href="#updates">Updates &amp; install</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-base">
+    <div class="footer-base-inner">
+      <span>© 2025–2026 NoBuf · MIT License</span>
+      <span>Not affiliated with Telegram FZ-LLC</span>
+    </div>
+  </div>
+</footer>
+
+<script src="shared.js" defer></script>
+</body>
+</html>

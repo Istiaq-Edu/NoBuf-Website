@@ -3,1654 +3,437 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NoBuf — Zero-Buffer Video Streaming</title>
-  <meta name="description" content="Stream video from Telegram with zero buffering. Open-source desktop player with MSE prebuffering, parallel downloads, and unlimited free storage.">
-  <meta property="og:title" content="NoBuf — Zero-Buffer Video Streaming">
-  <meta property="og:description" content="Stream video from Telegram with zero buffering. Open-source desktop player with MSE prebuffering.">
-  <meta property="og:image" content="assets/banner.png">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --bg-deep: #013718;
-      --bg-panel: #053a20;
-      --bg-surface: #0a5730;
-      --bg-elevated: #0f6b3a;
-      --text-primary: #ffffff;
-      --text-secondary: #a8fadf;
-      --text-muted: #7be8b8;
-      --text-subtle: #40a57f;
-      --accent: #1dfc9f;
-      --accent-hover: #a8fadf;
-      --accent-glow: rgba(29, 252, 159, 0.15);
-      --border: rgba(29, 252, 159, 0.12);
-      --border-subtle: rgba(29, 252, 159, 0.06);
-      --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --radius-full: 9999px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-deep);
-      color: var(--text-secondary);
-      font-size: 16px;
-      line-height: 1.5;
-      font-feature-settings: 'cv01', 'ss03';
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-
-    .mono {
-      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    }
-
-    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
-    a:hover { color: var(--accent-hover); }
-
-    .container {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* ── NAV ── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(1, 55, 24, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    nav .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
-    }
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.3px;
-    }
-    .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
-    .nav-links { display: flex; align-items: center; gap: 28px; }
-    .nav-links a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: color 0.15s;
-    }
-    .nav-links a:hover { color: var(--text-primary); }
-    .nav-cta {
-      background: var(--accent) !important;
-      color: #013718 !important;
-      padding: 6px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 13px !important;
-      font-weight: 600;
-      transition: background 0.15s;
-    }
-    .nav-cta:hover { background: var(--accent-hover) !important; }
-
-    /* ── HERO ── */
-    .hero {
-      padding: 100px 0 80px;
-      text-align: center;
-      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(29, 252, 159, 0.08) 0%, transparent 60%);
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 12px 4px 6px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--border);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 28px;
-    }
-    .hero-badge-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-    .hero-badge-version {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-    }
-    .hero h1 {
-      font-size: clamp(36px, 6vw, 72px);
-      font-weight: 600;
-      line-height: 1.0;
-      letter-spacing: -1.584px;
-      color: var(--text-primary);
-      margin-bottom: 20px;
-    }
-    .hero h1 span {
-      background: linear-gradient(135deg, #1dfc9f, #40a57f);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      font-size: 18px;
-      line-height: 1.6;
-      color: var(--text-muted);
-      max-width: 560px;
-      margin: 0 auto 36px;
-      letter-spacing: -0.165px;
-    }
-    .hero-buttons {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: var(--accent);
-      color: #013718;
-      border-radius: var(--radius-sm);
-      font-size: 15px;
-      font-weight: 600;
-      transition: background 0.15s, transform 0.1s;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-primary:hover { background: var(--accent-hover); color: #013718; transform: translateY(-1px); }
-    .btn-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: rgba(29, 252, 159, 0.05);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 15px;
-      font-weight: 500;
-      transition: background 0.15s, border-color 0.15s;
-      cursor: pointer;
-    }
-    .btn-ghost:hover { background: rgba(29, 252, 159, 0.1); border-color: rgba(29, 252, 159, 0.2); color: var(--text-primary); }
-    .hero-banner {
-      margin-top: 60px;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: 0 0 80px rgba(29, 252, 159, 0.08);
-    }
-    .hero-banner img {
-      width: 100%;
-      display: block;
-    }
-
-    /* ── SECTION BASE ── */
-    section { padding: 80px 0; }
-    .section-label {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-    .section-title {
-      font-size: clamp(28px, 4vw, 48px);
-      font-weight: 600;
-      line-height: 1.0;
-      letter-spacing: -1.056px;
-      color: var(--text-primary);
-      margin-bottom: 16px;
-    }
-    .section-subtitle {
-      font-size: 18px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      letter-spacing: -0.165px;
-      max-width: 560px;
-    }
-
-    /* ── PROBLEM ── */
-    .problem { border-bottom: 1px solid var(--border-subtle); }
-    .problem-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: center;
-      margin-top: 48px;
-    }
-    .problem-left h3 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.24px;
-      margin-bottom: 16px;
-    }
-    .problem-left p {
-      font-size: 15px;
-      color: var(--text-muted);
-      line-height: 1.7;
-      margin-bottom: 24px;
-    }
-    .problem-stats {
-      display: flex;
-      gap: 24px;
-    }
-    .stat-item {
-      padding: 16px 20px;
-      background: rgba(29, 252, 159, 0.04);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-    }
-    .stat-value {
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.6px;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-subtle);
-      margin-top: 4px;
-    }
-    .problem-right {
-      padding: 32px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-    }
-    .problem-right h4 {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 20px;
-    }
-    .provider-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    .provider-row:last-child { border-bottom: none; }
-    .provider-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-    .provider-storage {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-    .provider-row.highlight .provider-name { color: var(--accent); font-weight: 600; }
-    .provider-row.highlight .provider-storage { color: var(--accent); font-weight: 500; }
-
-    /* ── HOW IT WORKS ── */
-    .how-it-works { border-bottom: 1px solid var(--border-subtle); }
-    .pipeline {
-      margin-top: 48px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .pipeline-step {
-      display: grid;
-      grid-template-columns: 64px 1fr;
-      gap: 24px;
-      position: relative;
-    }
-    .pipeline-connector {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .pipeline-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--accent);
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
-    }
-    .pipeline-line {
-      width: 1px;
-      flex: 1;
-      background: linear-gradient(to bottom, var(--accent), rgba(29, 252, 159, 0.1));
-      min-height: 40px;
-    }
-    .pipeline-content {
-      padding-bottom: 36px;
-    }
-    .pipeline-content h4 {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 6px;
-      letter-spacing: -0.18px;
-    }
-    .pipeline-content p {
-      font-size: 15px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .pipeline-content code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      background: rgba(29, 252, 159, 0.1);
-      color: var(--accent);
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .pipeline-step:last-child .pipeline-line { display: none; }
-    .pipeline-step:last-child .pipeline-content { padding-bottom: 0; }
-
-    /* ── TECH TABLE ── */
-    .tech-table-wrap {
-      margin-top: 48px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    .tech-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .tech-table th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--text-subtle);
-      padding: 12px 20px;
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border);
-    }
-    .tech-table td {
-      padding: 14px 20px;
-      font-size: 14px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    .tech-table tr:last-child td { border-bottom: none; }
-    .tech-table td:first-child {
-      font-weight: 500;
-      color: var(--text-primary);
-      white-space: nowrap;
-    }
-    .tech-table td:last-child {
-      color: var(--text-muted);
-    }
-    .tech-note {
-      margin-top: 16px;
-      padding: 14px 18px;
-      background: rgba(251, 191, 36, 0.08);
-      border: 1px solid rgba(251, 191, 36, 0.25);
-      border-left: 3px solid #fbbf24;
-      border-radius: var(--radius-md);
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .tech-note strong { color: #fbbf24; }
-
-    /* ── FEATURES ── */
-    .features-grid {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .feature-card {
-      padding: 24px;
-      background: rgba(29, 252, 159, 0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .feature-card:hover {
-      background: rgba(29, 252, 159, 0.06);
-      border-color: rgba(29, 252, 159, 0.2);
-    }
-    .feature-icon {
-      font-size: 24px;
-      margin-bottom: 12px;
-    }
-    .feature-card h4 {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 6px;
-      letter-spacing: -0.165px;
-    }
-    .feature-card p {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .nb-tip {
-      margin-top: 14px;
-      padding: 12px 16px;
-      background: rgba(29, 252, 159, 0.12);
-      border: 1.5px solid rgba(29, 252, 159, 0.35);
-      border-radius: 8px;
-      font-size: 13px;
-      line-height: 1.6;
-      color: #e0fff0;
-      box-shadow: 0 0 12px rgba(29, 252, 159, 0.1);
-      animation: nb-pulse 3s ease-in-out infinite;
-    }
-    @keyframes nb-pulse {
-      0%, 100% { box-shadow: 0 0 12px rgba(29, 252, 159, 0.1); }
-      50% { box-shadow: 0 0 20px rgba(29, 252, 159, 0.25); }
-    }
-    .nb-tip strong { color: var(--accent); }
-    .nb-tip code {
-      background: rgba(29, 252, 159, 0.15);
-      padding: 1px 5px;
-      border-radius: 3px;
-      font-size: 11.5px;
-      color: var(--accent);
-    }
-
-    /* ── SCREENSHOTS ── */
-    .screenshots { border-bottom: 1px solid var(--border-subtle); }
-    .screenshot-grid {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-    .screenshot-item {
-      position: relative;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--bg-panel);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    }
-    .screenshot-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(29, 252, 159, 0.1);
-      border-color: rgba(29, 252, 159, 0.25);
-    }
-    .screenshot-item img {
-      width: 100%;
-      display: block;
-      aspect-ratio: 16 / 10;
-      object-fit: cover;
-      object-position: top;
-    }
-    .screenshot-item .screenshot-label {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 8px 16px;
-      background: linear-gradient(transparent, rgba(1, 55, 24, 0.9));
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-align: center;
-    }
-
-    /* ── WHY TELEGRAM ── */
-    .why-telegram { border-bottom: 1px solid var(--border-subtle); }
-    .telegram-grid {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-    .telegram-card {
-      padding: 24px;
-      background: rgba(29, 252, 159, 0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      text-align: center;
-    }
-    .telegram-card .stat-value {
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-    .telegram-card .stat-label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* ── DOWNLOADS ── */
-    .downloads { text-align: center; }
-    .download-cards {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      max-width: 720px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .download-card {
-      padding: 28px 20px;
-      background: rgba(29, 252, 159, 0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      transition: background 0.15s, border-color 0.15s;
-      cursor: pointer;
-      text-decoration: none !important;
-    }
-    .download-card:hover {
-      background: rgba(29, 252, 159, 0.08);
-      border-color: rgba(29, 252, 159, 0.25);
-    }
-    .download-card .platform-icon {
-      font-size: 28px;
-      margin-bottom: 12px;
-    }
-    .download-card h4 {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-    }
-    .download-card p {
-      font-size: 12px;
-      color: var(--text-subtle);
-    }
-    .download-card .download-link {
-      display: inline-block;
-      margin-top: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
-    }
-    .download-version {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-subtle);
-      margin-top: 6px;
-    }
-    .download-beta-note {
-      margin-top: 24px;
-      padding: 14px 18px;
-      background: rgba(251, 191, 36, 0.08);
-      border: 1px solid rgba(251, 191, 36, 0.25);
-      border-left: 3px solid #fbbf24;
-      border-radius: var(--radius-md);
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      max-width: 520px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-    }
-    .download-beta-note strong { color: #fbbf24; }
-
-    /* ── FOOTER ── */
-    footer {
-      padding: 40px 0;
-      border-top: 1px solid var(--border-subtle);
-    }
-    footer .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .footer-left {
-      font-size: 13px;
-      color: var(--text-subtle);
-    }
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    /* ── HERO ENTRANCE ── */
-    /* hero-badge animation moved to badgeGlow combo */
-    .hero h1 {
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both !important;
-    }
-    .hero > .container > p {
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both !important;
-    }
-    .hero-buttons {
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both !important;
-    }
-    .hero-banner {
-      animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both !important;
-    }
-
-    @keyframes heroFadeUp {
-      from { opacity: 0; transform: translateY(60px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── FLOATING GLOW ORB ── */
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -10%;
-      left: 50%;
-      width: 500px;
-      height: 500px;
-      transform: translateX(-50%);
-      background: radial-gradient(circle, rgba(29, 252, 159, 0.07) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: orbFloat 10s ease-in-out infinite;
-      z-index: 0;
-    }
-    .hero {
-      position: relative;
-      overflow: hidden;
-    }
-    .hero > .container { position: relative; z-index: 1; }
-
-    @keyframes orbFloat {
-      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
-      50%      { transform: translateX(-50%) translateY(-20px) scale(1.03); opacity: 0.7; }
-    }
-
-    /* ── PIPELINE STEP STAGGER ── */
-    .pipeline-step {
-      opacity: 0;
-      transform: translateX(-20px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .pipeline-step.visible {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .pipeline-step:nth-child(1).visible { transition-delay: 0.0s; }
-    .pipeline-step:nth-child(2).visible { transition-delay: 0.1s; }
-    .pipeline-step:nth-child(3).visible { transition-delay: 0.2s; }
-    .pipeline-step:nth-child(4).visible { transition-delay: 0.3s; }
-    .pipeline-step:nth-child(5).visible { transition-delay: 0.4s; }
-
-    /* ── PIPELINE DOT PULSE ── */
-    .pipeline-dot {
-      animation: dotPulse 2s ease-in-out infinite;
-    }
-    .pipeline-step:nth-child(2) .pipeline-dot { animation-delay: 0.3s; }
-    .pipeline-step:nth-child(3) .pipeline-dot { animation-delay: 0.6s; }
-    .pipeline-step:nth-child(4) .pipeline-dot { animation-delay: 0.9s; }
-    .pipeline-step:nth-child(5) .pipeline-dot { animation-delay: 1.2s; }
-
-    @keyframes dotPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0.4); }
-      50%      { box-shadow: 0 0 0 6px rgba(29, 252, 159, 0); }
-    }
-
-    /* ── ENHANCED FEATURE CARD HOVER ── */
-    .feature-card {
-      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    }
-    .feature-card:hover {
-      background: rgba(29, 252, 159, 0.08);
-      border-color: rgba(29, 252, 159, 0.25);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(29, 252, 159, 0.08), 0 0 0 1px rgba(29, 252, 159, 0.12);
-    }
-
-    /* ── ENHANCED DOWNLOAD CARD HOVER ── */
-    .download-card {
-      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    }
-    .download-card:hover {
-      background: rgba(29, 252, 159, 0.08);
-      border-color: rgba(29, 252, 159, 0.3);
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 12px 40px rgba(29, 252, 159, 0.1);
-    }
-
-    /* ── DOWNLOAD CARD SELECTED HIGHLIGHT ── */
-    .download-card.detected {
-      border-color: rgba(29, 252, 159, 0.35);
-      background: rgba(29, 252, 159, 0.06);
-      box-shadow: 0 0 20px rgba(29, 252, 159, 0.06);
-    }
-    .download-card.detected::after {
-      content: 'Your OS';
-      position: absolute;
-      top: -8px;
-      right: 12px;
-      background: var(--accent);
-      color: #013718;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-    }
-    .download-card {
-      position: relative;
-    }
-
-
-
-    /* ── ANIMATIONS ── */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ── HERO BADGE DOT LIVE PULSE ── */
-    .hero-badge-dot {
-      animation: badgeDotPulse 2s ease-in-out infinite;
-    }
-    .hero-badge {
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both,
-                 badgeGlow 2.5s ease-in-out 1.5s infinite !important;
-    }
-    @keyframes badgeGlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0); border-color: var(--border); }
-      50% { box-shadow: 0 0 16px 4px rgba(29, 252, 159, 0.25); border-color: rgba(29, 252, 159, 0.4); }
-    }
-    @keyframes badgeDotPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 252, 159, 0.5); }
-      50%      { box-shadow: 0 0 0 4px rgba(29, 252, 159, 0); }
-    }
-
-    /* ── BUTTON SHIMMER ON HOVER ── */
-    .btn-primary {
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-primary::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: none;
-    }
-    .btn-primary:hover::after {
-      animation: btnShimmer 0.6s ease forwards;
-    }
-    @keyframes btnShimmer {
-      to { left: 100%; }
-    }
-
-    /* ── REDUCED MOTION ── (temporarily disabled for debugging)
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-      .pipeline-step { opacity: 1; transform: none; }
-      .fade-in { opacity: 1; transform: none; }
-    } */
-
-    /* ═══════════════════════════════════════════
-       PREMIUM EFFECTS
-       ═══════════════════════════════════════════ */
-
-    /* ── GRADIENT TEXT SHIMMER on "zero buffering" ── */
-    .hero h1 span {
-      background: linear-gradient(
-        135deg,
-        #1dfc9f 0%,
-        #40a57f 25%,
-        #a8fadf 50%,
-        #40a57f 75%,
-        #1dfc9f 100%
-      ) !important;
-      background-size: 200% 200% !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-      background-clip: text !important;
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
-                 textShimmer 4s ease-in-out 1.8s infinite !important;
-    }
-    @keyframes textShimmer {
-      0%, 100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
-    }
-
-    /* ── CURSOR GLOW FOLLOW in hero ── */
-    .hero-glow {
-      position: absolute;
-      width: 400px;
-      height: 400px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(29, 252, 159, 0.08) 0%, transparent 70%);
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 0;
-    }
-    .hero:hover .hero-glow {
-      opacity: 1;
-    }
-
-    /* ── FEATURE CARD STAGGER REVEAL ── */
-    .feature-card.fade-in:nth-child(1)  { transition-delay: 0.00s; }
-    .feature-card.fade-in:nth-child(2)  { transition-delay: 0.06s; }
-    .feature-card.fade-in:nth-child(3)  { transition-delay: 0.12s; }
-    .feature-card.fade-in:nth-child(4)  { transition-delay: 0.18s; }
-    .feature-card.fade-in:nth-child(5)  { transition-delay: 0.24s; }
-    .feature-card.fade-in:nth-child(6)  { transition-delay: 0.30s; }
-    .feature-card.fade-in:nth-child(7)  { transition-delay: 0.36s; }
-    .feature-card.fade-in:nth-child(8)  { transition-delay: 0.42s; }
-    .feature-card.fade-in:nth-child(9)  { transition-delay: 0.48s; }
-    .feature-card.fade-in:nth-child(10) { transition-delay: 0.54s; }
-    .feature-card.fade-in:nth-child(11) { transition-delay: 0.60s; }
-    .feature-card.fade-in:nth-child(12) { transition-delay: 0.66s; }
-
-    /* ── NAV SHRINK ON SCROLL ── */
-    nav {
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-    nav.scrolled {
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      border-bottom-color: rgba(29, 252, 159, 0.12);
-    }
-
-    /* ── TECH TABLE ROW HOVER ── */
-    .tech-table tbody tr {
-      transition: background 0.15s ease;
-    }
-    .tech-table tbody tr:hover {
-      background: rgba(29, 252, 159, 0.04);
-    }
-    .tech-table tbody tr:hover td:first-child {
-      color: var(--accent);
-    }
-
-    /* ── MAGNETIC BUTTON ── */
-    .btn-primary, .btn-ghost {
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                  background 0.15s, box-shadow 0.2s !important;
-    }
-    .btn-primary:active, .btn-ghost:active {
-      transform: scale(0.97) !important;
-    }
-    .btn-primary {
-      box-shadow: 0 0 0 0 rgba(29, 252, 159, 0);
-    }
-    .btn-primary:hover {
-      box-shadow: 0 0 20px rgba(29, 252, 159, 0.2),
-                  0 0 60px rgba(29, 252, 159, 0.05);
-    }
-
-    /* ── HERO BANNER PARALLAX ── */
-    .hero-banner {
-      will-change: transform;
-    }
-
-    /* ── STAT ITEM HOVER ── */
-    .stat-item {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .stat-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(29, 252, 159, 0.08);
-    }
-
-    /* ── TELEGRAM CARD HOVER ── */
-    .telegram-card {
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .telegram-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(29, 252, 159, 0.3);
-      box-shadow: 0 8px 32px rgba(29, 252, 159, 0.06);
-    }
-
-    /* ── PROVIDER ROW HOVER ── */
-    .provider-row {
-      transition: background 0.15s ease;
-    }
-    .provider-row:hover {
-      background: rgba(29, 252, 159, 0.03);
-    }
-
-    /* ── DOWNLOAD CARD ICON BOUNCE ── */
-    .download-card .platform-icon {
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .download-card:hover .platform-icon {
-      transform: scale(1.15) translateY(-2px);
-    }
-
-    /* ── FEATURE ICON GLOW ── */
-    .feature-icon {
-      transition: transform 0.2s ease, filter 0.2s ease;
-    }
-    .feature-card:hover .feature-icon {
-      transform: scale(1.1);
-      filter: drop-shadow(0 0 6px rgba(29, 252, 159, 0.3));
-    }
-
-    /* ── FOOTER LINK UNDERLINE ── */
-    .footer-links a {
-      position: relative;
-    }
-    .footer-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--accent);
-      transition: width 0.2s ease;
-    }
-    .footer-links a:hover::after {
-      width: 100%;
-    }
-
-    /* ── NAV LINK UNDERLINE ── */
-    .nav-links a {
-      position: relative;
-    }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--accent);
-      transition: width 0.2s ease;
-    }
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-
-    /* ── PREFERS REDUCED MOTION ── */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-      .hero-glow { display: none; }
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 1024px) {
-      .features-grid { grid-template-columns: repeat(2, 1fr); }
-      .telegram-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .problem-grid { grid-template-columns: 1fr; }
-      .features-grid { grid-template-columns: 1fr; }
-      .screenshot-grid { grid-template-columns: 1fr; }
-      .download-cards { grid-template-columns: 1fr; max-width: 320px; }
-      .telegram-grid { grid-template-columns: 1fr 1fr; }
-      .nav-links { display: none; }
-      .hero { padding: 60px 0 40px; }
-      section { padding: 60px 0; }
-      .problem-stats { flex-direction: column; }
-      footer .container { flex-direction: column; gap: 16px; text-align: center; }
-    }
-  </style>
+  <title>NoBuf · Your Telegram channels as an instant video library</title>
+  <meta name="description" content="NoBuf is a free, open-source desktop app that streams video straight from your Telegram channels. Press play and it plays — MKVs included, no download-first wait.">
+  <link rel="canonical" href="https://istiaq-edu.github.io/NoBuf-Website/">
+  <meta property="og:url" content="https://istiaq-edu.github.io/NoBuf-Website/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NoBuf">
+  <meta property="og:title" content="NoBuf · Your Telegram channels as an instant video library">
+  <meta property="og:description" content="Press play and it plays, MKVs included. Free, open source, local-first.">
+  <meta property="og:image" content="https://istiaq-edu.github.io/NoBuf-Website/assets/social-card.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NoBuf · Your Telegram channels as an instant video library">
+  <meta name="twitter:description" content="Press play and it plays, MKVs included. Free, open source, local-first.">
+  <meta name="twitter:image" content="https://istiaq-edu.github.io/NoBuf-Website/assets/social-card.jpg">
+  <meta name="theme-color" content="#0a0a0b">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "NoBuf",
+    "operatingSystem": "Windows, macOS, Linux",
+    "applicationCategory": "MultimediaApplication",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "softwareVersion": "1.0.0"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 
-<!-- ── NAV ── -->
-<nav>
-  <div class="container">
-    <div class="nav-brand">
-      <img src="assets/logo.png" alt="NoBuf">
-      NoBuf
+<!-- Tips banner (above nav) -->
+<div class="banner-wrap" data-banner>
+  <div class="banner" role="region" aria-label="Product tips">
+    <div class="banner-inner">
+      <p class="banner-tip">Tip: rename any channel with <b>[NB]</b> and it appears as a NoBuf folder instantly</p>
+      <p class="banner-tip" hidden>Tip: paste a <b>t.me</b> link to browse any public channel like a file library</p>
+      <button class="banner-dismiss" aria-label="Dismiss tips">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
     </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<header class="nav">
+  <nav class="nav-inner" aria-label="Main">
+    <a class="nav-brand" href="index.html">
+      <img src="assets/logo-small.webp" alt="" width="26" height="26"> NoBuf
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Menu">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+    </button>
     <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="#screenshots">Screenshots</a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf" target="_blank">GitHub</a>
-      <a href="#download" class="nav-cta">Download</a>
-    </div>
-  </div>
-</nav>
-
-<!-- ── HERO ── -->
-<section class="hero">
-  <div class="hero-glow" id="hero-glow"></div>
-  <div class="container">
-    <div class="hero-badge">
-      <div class="hero-badge-dot"></div>
-      <span>Open Source</span>
-      <span class="hero-badge-version" id="hero-version">v0.7.0</span>
-    </div>
-    <h1>Video streaming<br>with <span>zero buffering</span></h1>
-    <p>An open-source desktop player that streams video from Telegram channels with continuous prebuffering — so playback never stalls, even on seeks.</p>
-    <div class="hero-buttons">
-      <a href="#download" class="btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download
-      </a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf" target="_blank" class="btn-ghost">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        View on GitHub
+      <a class="nav-link active" href="index.html">Home</a>
+      <a class="nav-link" href="features.html">Features</a>
+      <a class="nav-link" href="download.html">Download</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="https://github.com/Istiaq-Edu/NoBuf" target="_blank" rel="noopener">
+        GitHub
+        <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 10l6-6M5 4h5v5"/></svg>
       </a>
     </div>
-    <div class="hero-banner">
-      <img src="assets/banner.png" alt="NoBuf — zero-buffer video streaming">
-    </div>
-  </div>
-</section>
+    <span class="nav-spacer"></span>
+    <span class="nav-version tnum" data-version-slot>v1.0.0</span>
+    <a class="btn btn-primary nav-cta" href="download.html">Download</a>
+  </nav>
+</header>
 
-<!-- ── PROMO BANNER / QUICK TIP ── -->
-<style>
-  .promo-banner {
-    padding: 20px 0;
-    background: linear-gradient(135deg, rgba(29, 252, 159, 0.06) 0%, rgba(99, 102, 241, 0.06) 100%);
-    border-top: 1px solid rgba(29, 252, 159, 0.15);
-    border-bottom: 1px solid rgba(29, 252, 159, 0.15);
-  }
-  .promo-inner {
-    max-width: 720px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    text-align: center;
-  }
-  .promo-item {
-    padding: 14px 20px;
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(29, 252, 159, 0.2);
-    border-radius: 10px;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--text);
-  }
-  .promo-item a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
-  .promo-item a:hover { opacity: 0.85; }
-  .promo-item .promo-label {
-    display: inline-block;
-    background: rgba(29, 252, 159, 0.15);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-right: 6px;
-  }
-  .promo-item .promo-warn { color: #fbbf24; font-size: 12px; }
-  .promo-item code {
-    background: rgba(29, 252, 159, 0.15);
-    padding: 1px 6px;
-    border-radius: 3px;
-    font-size: 13px;
-    color: var(--accent);
-    font-weight: 600;
-  }
-</style>
-<section class="promo-banner">
-  <div class="container">
-    <div class="promo-inner">
-      <div class="promo-item">
-        <span class="promo-label">💡 Quick Tip</span>
-        Already have a Telegram channel? Append <code>[NB]</code> to its name — NoBuf detects it instantly. No re-upload needed.
-      </div>
-      <div class="promo-item">
-        <span class="promo-label">📡 Public Channels</span>
-        Paste any <code>t.me/...</code> link to preview and join public channels — browse, forward, or stream directly. Channels named <code>[NB-PUB]</code> auto-sync.
-      </div>
-    </div>
-  </div>
-</section>
+<div class="progress" aria-hidden="true"><span></span></div>
 
-<!-- ── PROBLEM ── -->
-<section class="problem" id="problem">
-  <div class="container">
-    <span class="section-label">The problem</span>
-    <h2 class="section-title">Cloud storage is expensive,<br>slow, and capped.</h2>
-    <div class="problem-grid">
-      <div class="problem-left fade-in">
-        <h3>Telegram's servers have been storing your files for free since 2013.</h3>
-        <p>2 GB per file. Global CDN-backed delivery. No quotas, no expiry, no subscription. The infrastructure already exists — NoBuf just makes it stream like a local drive.</p>
-        <div class="problem-stats">
-          <div class="stat-item">
-            <div class="stat-value">2 GB</div>
-            <div class="stat-label">Max file size</div>
+<main id="main">
+  <!-- Hero -->
+  <section class="hero section-tight" data-hero-ambient>
+    <div class="container tc">
+      <p class="pill pill-accent hero-enter hero-enter-1 mb-24">
+        <span class="dot"></span>
+        v1.0 · Free &amp; open source · Windows / macOS / Linux
+      </p>
+      <h1 class="display hero-enter hero-enter-2" style="max-width: 880px; margin-inline: auto;">
+        Your Telegram channels are a movie library.
+        <span class="accent-span">Start watching like one.</span>
+      </h1>
+      <p class="lead hero-enter hero-enter-3 mt-24" style="max-width: 680px; margin-inline: auto;">
+        NoBuf streams video straight from your channels. Press play and it plays,
+        MKVs included, with no download-first wait. Your files stay in your own Telegram.
+      </p>
+      <div class="btn-row hero-enter hero-enter-4 mt-24" style="justify-content: center;">
+        <a class="btn btn-primary btn-lg" href="download.html">Download for free</a>
+        <a class="btn btn-ghost btn-lg" href="#how">How it works</a>
+      </div>
+      <p class="microproof hero-enter hero-enter-4 mt-24" style="justify-content: center;">
+        <span data-version-slot>v1.0.0</span>
+        <span class="sep">·</span>
+        <span>$0</span>
+        <span class="sep">·</span>
+        <span>local-first</span>
+        <span class="sep">·</span>
+        <span>no telemetry</span>
+      </p>
+    </div>
+
+    <div class="container-wide mt-24 hero-frame-wrap">
+      <div class="hero-glow" data-parallax-glow></div>
+      <figure class="hero-frame" data-parallax-frame style="position: relative;">
+        <div class="shot-frame">
+          <div class="shot-bar">
+            <span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="shot-title">Big_Buck_Bunny_60fps_4K.mkv</span>
           </div>
-          <div class="stat-item">
-            <div class="stat-value">0 $</div>
-            <div class="stat-label">Cost</div>
+          <img src="assets/preview-thumbnail.webp" alt="NoBuf player streaming a 4K video from a Telegram channel, with a hover-scrub thumbnail over the seek bar and a live cache meter"
+               width="1202" height="832" fetchpriority="high">
+        </div>
+        <figcaption class="visually-hidden">
+          Playing a 4K file directly from a Telegram channel while it caches in the background.
+        </figcaption>
+        <span class="float-chip chip-a"><span class="dot"></span>⌘ dual-audio switch mid-scene</span>
+        <span class="float-chip chip-b"><span class="dot"></span>hover-scrub thumbnails</span>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Platform one-liner -->
+  <section class="section-tight" style="padding-block: clamp(28px,4vw,48px);" aria-label="Platforms">
+    <div class="container platform-strip reveal">
+      <span class="p-os">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5L7.5 1.6v6.4H1V2.5zM8.5 1.4L15 .5v7.5H8.5V1.4zM1 9h6.5v6.4L1 14.5V9zm7.5 0H15v7.5l-6.5-.9V9z"/></svg>
+        Windows
+      </span>
+      <span class="p-os">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.2 8.4c0-1.4.8-2.6 1.9-3.2-.6-.9-1.6-1.5-2.7-1.6-1.1-.1-2.2.7-2.8.7-.6 0-1.5-.7-2.4-.7C3.6 3.7 2.1 4.6 1.3 6c-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.9-2.2.9-1.3 1.3-2.6 1.3-2.6s-2.4-.9-2.4-3.6zM9 1.9c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.6 1.4-.6.7-1.1 1.8-.9 2.8 1 .1 2-.5 2.6-1.3z"/></svg>
+        macOS · Intel &amp; Apple silicon
+      </span>
+      <span class="p-os">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 .5c-2 0-3.4 1.6-3.4 3.9 0 1.7.3 2.9-.9 4.4C2.5 10.3 1.6 11.6 1.6 13c0 .9.5 1.5 1.2 1.5.5 0 .9-.2 1.5-.2.5 0 .8.3 1.2.7.5.5 1 .8 1.8.8h1.4c.8 0 1.3-.3 1.8-.8.4-.4.7-.7 1.2-.7.6 0 1 .2 1.5.2.7 0 1.2-.6 1.2-1.5 0-1.4-.9-2.7-2.1-4.2-1.2-1.5-.9-2.7-.9-4.4C11.4 2.1 10 .5 8 .5z"/></svg>
+        Linux · AppImage, deb, rpm
+      </span>
+    </div>
+  </section>
+
+  <!-- Problem mirror -->
+  <section class="section-tight">
+    <div class="container reveal">
+      <h2 class="h3 mono-label" style="color: var(--text-mute);">The download wall</h2>
+      <p class="lead mt-16" style="max-width: 760px;">
+        You already keep movies and courses in Telegram channels. But watch one and you're
+        downloading gigabytes first, or re-downloading them on another machine tomorrow.
+        NoBuf deletes the wait without moving your files anywhere.
+      </p>
+    </div>
+  </section>
+
+  <!-- Why not just Telegram -->
+  <section class="section" id="why">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2 class="h2">Why not just Telegram?</h2>
+        <p class="lead">Telegram is a great vault. It was never a cinema. NoBuf keeps everything where it is and adds the missing half.</p>
+      </div>
+      <div class="split reveal">
+        <div class="panel panel-gives">
+          <div class="panel-title">
+            <span class="mono-label">What Telegram already gives you</span>
           </div>
-          <div class="stat-item">
-            <div class="stat-value">∞</div>
-            <div class="stat-label">Storage</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Unlimited cloud storage</b><span>Your channels hold terabytes for free</span></div>
+            </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>MP4 streaming in-app</b><span>For files Telegram's player supports</span></div>
+            </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>QR login &amp; drag-drop upload</b><span>Same account, same files</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-adds">
+          <div class="panel-title">
+            <span class="mono-label" style="color: var(--accent);">What NoBuf adds</span>
+          </div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>MKV, TS and HEVC play immediately</b><span>No full-file download first. The format wall comes down</span></div>
+            </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>A real seek engine</b><span>Jump anywhere in seconds, even cue-less MKVs; frame previews follow your cursor everywhere</span></div>
+            </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Subtitles built in</b><span>Embedded SRT/ASS tracks render with their fonts, plus OpenSubtitles search</span></div>
+            </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Dual-audio switching mid-scene</b><span>Change languages without losing your place</span></div>
+            </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>A library, not a chat log</b><span>Folders, groups, search, plus a local REST API to script it all</span></div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="problem-right fade-in">
-        <h4>Free storage comparison</h4>
-        <div class="provider-row">
-          <span class="provider-name">Google Drive</span>
-          <span class="provider-storage">15 GB</span>
+    </div>
+  </section>
+
+  <!-- Highlight cards (asymmetric bento) -->
+  <section class="section-tight" id="highlights">
+    <div class="container">
+      <div class="card-grid grid-3" data-stagger>
+        <article class="card span-2 reveal" data-spot>
+          <div class="card-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 2"/></svg>
+          </div>
+          <h3 class="h4">The seek engine</h3>
+          <p>Serverside keyframe indexes grow as the file arrives, VBR-aware mapping resolves any timestamp,
+             and cue-less MKVs get cluster bisection. What used to freeze a player for minutes lands in seconds.
+             Scrub anywhere, even parts you haven't buffered: frame previews follow your cursor.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h14v14H3z" opacity=".001"/><path d="M4 5c3-2 9-2 12 0M5 8.5c2.5-1.5 7-1.5 10 0M7 12c1.8-1 4.2-1 6 0M10 15.2v.1"/></svg>
+          </div>
+          <h3 class="h4">Formats, handled</h3>
+          <p>HEVC, 10-bit, HDR, odd containers: NoBuf detects what your machine plays and remuxes or hardware-transcodes the rest.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14M5 9h10M7 13h6M9 17h2"/></svg>
+          </div>
+          <h3 class="h4">Subtitles built in</h3>
+          <p>Embedded SRT and ASS render with bundled fonts. Size, position and sync sliders. OpenSubtitles search included.</p>
+        </article>
+        <article class="card reveal" data-spot>
+          <div class="card-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3v10m0 0l-3.5-3.5M10 13l3.5-3.5M4 16h12"/></svg>
+          </div>
+          <h3 class="h4">Caching that follows you</h3>
+          <p>Playback starts instantly while the rest of the file quietly downloads ahead of your playhead, so rewinds are instant.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Subtitle & audio spotlight -->
+  <section class="section" id="spotlight">
+    <div class="container">
+      <div class="split">
+        <div class="reveal">
+          <h2 class="h2">Dual-audio films.<br>Subtitles that just work.</h2>
+          <p class="lead mt-16">The two questions every movie hoarder asks first. Both answered.</p>
+          <ul role="list" class="mt-24" style="display:grid; gap:12px;">
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Switch audio languages mid-scene</b><span>Japanese to English and back without a reload or lost position</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Embedded subs extract near your playhead</b><span>They never fight playback for bandwidth</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Full control</b><span>Size, position, sync sliders; per-file track memory</span></div>
+            </li>
+            <li class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>No subs embedded?</b><span>Hash-matched OpenSubtitles search is built into the player</span></div>
+            </li>
+          </ul>
         </div>
-        <div class="provider-row">
-          <span class="provider-name">Dropbox</span>
-          <span class="provider-storage">2 GB</span>
-        </div>
-        <div class="provider-row">
-          <span class="provider-name">iCloud</span>
-          <span class="provider-storage">5 GB</span>
-        </div>
-        <div class="provider-row highlight">
-          <span class="provider-name">Telegram + NoBuf</span>
-          <span class="provider-storage">Unlimited</span>
+        <div class="reveal" data-spot>
+          <figure class="shot-frame">
+            <div class="shot-bar">
+              <span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="shot-title">subtitle controls</span>
+            </div>
+            <img src="assets/video-player-settings.webp" alt="NoBuf player settings panel showing playback, display and bandwidth controls" loading="lazy" width="1202" height="832">
+          </figure>
+          <p class="shot-caption"><b>Honest footnote:</b> image-based subtitle formats like PGS aren't supported yet; text formats are.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Proof gallery -->
+  <section class="section-tight" id="proof">
+    <div class="container-wide">
+      <div class="section-head center reveal">
+        <h2 class="h2">Watch the download happen</h2>
+        <p class="lead">Real screenshots, not renders.</p>
+      </div>
+      <div class="card-grid grid-3" data-stagger>
+        <figure class="reveal">
+          <div class="shot-frame">
+            <div class="shot-bar"><span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="shot-title">cache meter</span></div>
+            <img src="assets/download-from-cache-in-video-player.webp" alt="In-player download pill showing live megabytes-per-second speed while watching" loading="lazy" width="1202" height="832">
+          </div>
+          <figcaption class="shot-caption"><b>Live cache pill.</b> Download speed while the film keeps playing</figcaption>
+        </figure>
+        <figure class="reveal">
+          <div class="shot-frame">
+            <div class="shot-bar"><span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="shot-title">close dialog</span></div>
+            <img src="assets/exit-options.webp" alt="Dialog offering to continue downloading, keep cached buffers, or discard when closing a partially cached video" loading="lazy" width="1202" height="832">
+          </div>
+          <figcaption class="shot-caption"><b>Close a video at 39%.</b> Save the rest later, keep the cache, or discard</figcaption>
+        </figure>
+        <figure class="reveal">
+          <div class="shot-frame">
+            <div class="shot-bar"><span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="shot-title">transfers</span></div>
+            <img src="assets/down-up.webp" alt="Light theme transfers panel listing concurrent uploads and downloads with progress" loading="lazy" width="1202" height="832">
+          </div>
+          <figcaption class="shot-caption"><b>Transfers panel.</b> Concurrent uploads and downloads under your control</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup in 3 steps -->
+  <section class="section" id="how">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2 class="h2">Setup in three steps</h2>
+        <p class="lead">One login you already have, one scan, done.</p>
+      </div>
+      <div class="steps" data-stagger>
+        <div class="step reveal">
+          <span class="step-num" aria-hidden="true"></span>
+          <h3 class="h4">Install</h3>
+          <p>Grab the installer for your platform from GitHub Releases.</p>
+        </div>
+        <div class="step reveal">
+          <span class="step-num" aria-hidden="true"></span>
+          <h3 class="h4">Log in once</h3>
+          <p>The built-in wizard opens my.telegram.org, fills the app-creation form for you, then QR-scans you in.</p>
+          <p class="callout mt-16">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5v.1"/></svg>
+            You log in to my.telegram.org once yourself. Keys are stored locally and never sent anywhere but Telegram.
+          </p>
+        </div>
+        <div class="step reveal">
+          <span class="step-num" aria-hidden="true"></span>
+          <h3 class="h4">Press play</h3>
+          <p>Rename a channel with [NB] or paste a public channel link, and your library appears ready to play.</p>
+        </div>
+      </div>
+      <p class="tc mt-24 reveal small" style="color: var(--text-mute);">
+        Need details? <a href="download.html">Download page</a> walks through first-run completely.
+      </p>
+    </div>
+  </section>
+
+  <!-- Trust strip -->
+  <section class="section-tight">
+    <div class="container">
+      <div class="trust-strip" data-stagger>
+        <div class="trust-item reveal">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="8" width="12" height="8" rx="2"/><path d="M7 8V6a3 3 0 016 0v2"/></svg>
+          <div><b>Local-first by architecture</b><span>All servers bind to 127.0.0.1, the UI sandbox allows only localhost. No accounts with us, no telemetry.</span></div>
+        </div>
+        <div class="trust-item reveal">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2l6 3v5c0 4-2.5 6.5-6 8-3.5-1.5-6-4-6-8V5l6-3z"/><path d="M7.5 10l1.8 1.8L13 8.2"/></svg>
+          <div><b>Signed automatic updates</b><span>Every release is minisign-verified before install, straight from GitHub Releases.</span></div>
+        </div>
+        <div class="trust-item reveal">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h12M4 10h12M4 15h7"/></svg>
+          <div><b>Scriptable</b><span>An opt-in REST API on localhost lists your library and range-streams any file to mpv, VLC or curl.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="cta-band">
+    <div class="cta-band-inner container reveal">
+      <h2 class="h2">Your library is already uploaded.<br>Start watching it.</h2>
+      <p class="lead mt-16">Free, open source, and it never moves your files.</p>
+      <div class="btn-row mt-24" style="justify-content:center;">
+        <a class="btn btn-primary btn-lg" href="download.html">Download NoBuf <span class="tnum" data-version-slot>v1.0.0</span></a>
+        <a class="btn btn-ghost btn-lg" href="features.html">See all features</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <p class="footer-brand"><img src="assets/logo-small.webp" alt="" width="24" height="24"> NoBuf</p>
+      <p class="footer-note">Turns your Telegram channels into an instant-streaming video library. Free and open source under MIT.</p>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Product</p>
+      <ul>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="download.html">Download</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Project</p>
+      <ul>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank" rel="noopener">Releases</a></li>
+        <li><a href="https://github.com/Istiaq-Edu/NoBuf/blob/dev/LICENSE" target="_blank" rel="noopener">License</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <p class="col-title">Learn</p>
+      <ul>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#why">Why not just Telegram</a></li>
+        <li><a href="faq.html#privacy">Privacy</a></li>
+      </ul>
     </div>
   </div>
-</section>
-
-<!-- ── HOW IT WORKS ── -->
-<section class="how-it-works" id="how-it-works">
-  <div class="container">
-    <span class="section-label">How it works</span>
-    <h2 class="section-title">Click play. Never buffer.</h2>
-    <p class="section-subtitle">The MSE pipeline fetches, demuxes, and feeds video to your browser engine — all while you watch.</p>
-
-    <div class="pipeline">
-      <div class="pipeline-step">
-        <div class="pipeline-connector">
-          <div class="pipeline-dot"></div>
-          <div class="pipeline-line"></div>
-        </div>
-        <div class="pipeline-content">
-          <h4>First frame in ~200ms</h4>
-          <p>Fetches <code>512 KB</code> from Telegram — just enough to demux the container's init segments and feed them to MediaSource SourceBuffers.</p>
-        </div>
-      </div>
-      <div class="pipeline-step">
-        <div class="pipeline-connector">
-          <div class="pipeline-dot"></div>
-          <div class="pipeline-line"></div>
-        </div>
-        <div class="pipeline-content">
-          <h4>Progressive prebuffer — next 180 seconds</h4>
-          <p>Fragment sizes ramp up: <code>512KB → 1MB → 2MB → 4MB → 8MB</code>. Starts fast, then saturates your bandwidth. 3 parallel TCP connections to Telegram's data center.</p>
-        </div>
-      </div>
-      <div class="pipeline-step">
-        <div class="pipeline-connector">
-          <div class="pipeline-dot"></div>
-          <div class="pipeline-line"></div>
-        </div>
-        <div class="pipeline-content">
-          <h4>Smart seek — 500ms debounce</h4>
-          <p>Rapid arrow-key skips are debounced. Cache checked first — instant playback if already buffered. Otherwise a fresh <code>512 KB</code> fetch gets you playing again immediately.</p>
-        </div>
-      </div>
-      <div class="pipeline-step">
-        <div class="pipeline-connector">
-          <div class="pipeline-dot"></div>
-          <div class="pipeline-line"></div>
-        </div>
-        <div class="pipeline-content">
-          <h4>Disk-backed stream cache</h4>
-          <p>Downloaded bytes are written to disk with <code>.dat + .meta</code> byte-range sidecars. Overlapping range requests are deduplicated. Replayed instantly on next visit.</p>
-        </div>
-      </div>
-      <div class="pipeline-step">
-        <div class="pipeline-connector">
-          <div class="pipeline-dot"></div>
-        </div>
-        <div class="pipeline-content">
-          <h4>Background cache continues after close</h4>
-          <p>Close the player — the full video keeps downloading. Gap detection fills in what's missing. Next time you open it, playback is instant from cache.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="tech-table-wrap fade-in">
-      <table class="tech-table">
-        <thead>
-          <tr>
-            <th>What</th>
-            <th>How</th>
-            <th>Why</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Progressive fragments</td><td class="mono">512KB → 8MB</td><td>First frame in ~200ms, then saturate bandwidth</td></tr>
-          <tr><td>180s prebuffer window</td><td>Continuous fetch ahead of playback</td><td>You never outrun the buffer</td></tr>
-          <tr><td>Disk-backed stream cache</td><td class="mono">.dat + .meta</td><td>Instant replay, survives app restarts</td></tr>
-          <tr><td>3× parallel TCP pool</td><td>Split file across 3 connections</td><td>~3× bandwidth vs single-threaded</td></tr>
-          <tr><td>Download coordinator</td><td>Deduplicate overlapping ranges</td><td>No wasted bandwidth on concurrent seeks</td></tr>
-          <tr><td>Seek debounce</td><td class="mono">500ms</td><td>Arrow-key spam doesn't spawn 15 downloads</td></tr>
-          <tr><td>VBR byte→time calibration</td><td>cue-index anchors + seek cluster bytes</td><td>Accurate green bar for variable bitrate</td></tr>
-          <tr><td>Keyframe-boundary refills</td><td>MKV refills stop on exact keyframe</td><td>Zero-overlap GOP abutment → no decode crashes</td></tr>
-          <tr><td>Source ID isolation</td><td>Playback / thumbnail / tail tagged separately</td><td>Thumbnail pipeline can't cancel player downloads</td></tr>
-          <tr><td>Dynamic cold-start overlay</td><td>Gates playback on real buffered runway</td><td>No spinner-then-stall</td></tr>
-          <tr><td>Pause/resume prefetch</td><td>Paused stays paused, prebuffer persists</td><td>"Paused means paused" — only resume unpauses</td></tr>
-          <tr><td>20MB buffer cap + backpressure</td><td class="mono">20MB / 80MB public</td><td>Prevents memory bloat on long videos</td></tr>
-          <tr><td>Windows cache protection</td><td class="mono">no FILE_SHARE_DELETE</td><td>Antivirus can't delete cache mid-stream</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="tech-note fade-in">
-      <strong>⚠ Format Support:</strong> The MSE engine streams <strong>.mp4</strong> (mp4box.js), <strong>.ts / .m2ts / .mts</strong> (mpegts.js), and <strong>.mkv / .webm</strong> (Mediabunny transmuxer) — all with seeking and a VBR-accurate progress bar. H.264 MKV seeks natively by keyframe; HEVC MKV is remuxed server-side via ffmpeg. VP9/AV1 in MKV/WebM play through the native engine.
-    </div>
-  </div>
-</section>
-
-<!-- ── FEATURES ── -->
-<section id="features">
-  <div class="container">
-    <span class="section-label">Features</span>
-    <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
-
-    <div class="features-grid">
-      <div class="feature-card fade-in">
-        <div class="feature-icon">▶️</div>
-        <h4>MSE Video Player</h4>
-        <p>Media Source Extensions with format-aware routing (MP4 / TS / MKV / WebM). Progressive fragment sizing for instant first frame.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🔄</div>
-        <h4>Continuous Prebuffer</h4>
-        <p>180-second look-ahead downloads while you watch. Playback never stalls, even on seeks.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">💾</div>
-        <h4>Disk-Backed Cache</h4>
-        <p>Byte-range tracking with gap detection. Cached videos replay instantly.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🔁</div>
-        <h4>Background Cache</h4>
-        <p>Close the player — the full video keeps downloading. Next open is instant from cache.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🎞️</div>
-        <h4>Video Preview</h4>
-        <p>Sprite sheet scrub previews for frame-accurate seeking. See before you seek.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🎵</div>
-        <h4>Audio Playback</h4>
-        <p>Built-in audio player with speed control for music and podcasts.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">⏸️</div>
-        <h4>Pause / Resume Prefetch</h4>
-        <p>Paused stays paused — prebuffer persists through seeks. Only the resume button unpauses.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🟢</div>
-        <h4>VBR-Accurate Bar</h4>
-        <p>Green prebuffer bar calibrated from real keyframe cue anchors, not linear estimates.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📡</div>
-        <h4>Public Channels</h4>
-        <p>Paste any <code>t.me/...</code> link to preview and join. Browse, forward, or stream — all without leaving NoBuf.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📲</div>
-        <h4>QR Login</h4>
-        <p>Scan a QR code with your Telegram app — done. No typing phone numbers or codes.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🖱️</div>
-        <h4>External Drag-Drop</h4>
-        <p>Drag files directly from Windows Explorer into NoBuf to upload instantly.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📁</div>
-        <h4>Folder System</h4>
-        <p>Telegram channels as folders. Create, rename, delete, drag-and-drop.</p>
-        <div class="nb-tip"><strong>Tip:</strong> To add an existing channel, just append <code>[NB]</code> to its name — NoBuf picks it up automatically.</div>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📥</div>
-        <h4>Parallel Downloads</h4>
-        <p>3 concurrent TCP connections per file. ~3× faster than single-threaded.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📄</div>
-        <h4>PDF Viewer</h4>
-        <p>Infinite-scroll PDF rendering with zoom and page navigation built in.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🖼️</div>
-        <h4>Image Preview</h4>
-        <p>Inline thumbnails and a full-resolution viewer for photos and artwork.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">⚙️</div>
-        <h4>Player Settings</h4>
-        <p>Dedicated controls — playback speed, video fit, brightness, rotation, and loop mode.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📊</div>
-        <h4>Bandwidth Management</h4>
-        <p>Per-session speed limits for streaming and downloads. Daily bandwidth tracking with configurable caps.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🗜️</div>
-        <h4>Archive Extraction</h4>
-        <p>Browse and extract entries from ZIP / RAR / 7Z archives without leaving the app.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🤖</div>
-        <h4>REST API</h4>
-        <p>Local HTTP API (off by default) with API key auth. Enables AI agents and automation.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🔒</div>
-        <h4>Local-Only</h4>
-        <p>All credentials and data stay on your machine. No telemetry, no third-party servers.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🖥️</div>
-        <h4>Cross-Platform</h4>
-        <p>Native builds for Windows, macOS (Intel + Apple Silicon), and Linux.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── SCREENSHOTS ── -->
-<section class="screenshots" id="screenshots">
-  <div class="container">
-    <span class="section-label">Screenshots</span>
-    <h2 class="section-title">See it in action.</h2>
-    <p class="section-subtitle">A native desktop app built with Tauri — fast, lightweight, cross-platform.</p>
-
-    <div class="screenshot-grid">
-      <div class="screenshot-item">
-        <img src="assets/main-1.png" alt="NoBuf — Main Dashboard" loading="lazy">
-        <span class="screenshot-label">Main Dashboard</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/grid-view.png" alt="NoBuf — Grid View" loading="lazy">
-        <span class="screenshot-label">Grid View</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/list-view.png" alt="NoBuf — List View" loading="lazy">
-        <span class="screenshot-label">List View</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/video-player-settings.png" alt="NoBuf — Video Player Settings" loading="lazy">
-        <span class="screenshot-label">Video Player Settings</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/preview-thumbnail.png" alt="NoBuf — Video Preview Thumbnails" loading="lazy">
-        <span class="screenshot-label">Preview Thumbnails</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/download-from-cache-in-video-player.png" alt="NoBuf — Cache Playback" loading="lazy">
-        <span class="screenshot-label">Cache Playback</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/down-up.png" alt="NoBuf — Download / Upload" loading="lazy">
-        <span class="screenshot-label">Download / Upload</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/auth-1.png" alt="NoBuf — Authentication / QR Login" loading="lazy">
-        <span class="screenshot-label">Authentication</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/settings.png" alt="NoBuf — Settings" loading="lazy">
-        <span class="screenshot-label">Settings</span>
-      </div>
-      <div class="screenshot-item">
-        <img src="assets/exit-options.png" alt="NoBuf — Exit Options" loading="lazy">
-        <span class="screenshot-label">Exit Options</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── WHY TELEGRAM ── -->
-<section class="why-telegram" id="why-telegram">
-  <div class="container">
-    <span class="section-label">Why Telegram?</span>
-    <h2 class="section-title">The best cloud you<br>never knew you had.</h2>
-
-    <div class="telegram-grid fade-in">
-      <div class="telegram-card">
-        <div class="stat-value">Unlimited</div>
-        <div class="stat-label">Storage — no quotas, no expiry</div>
-      </div>
-      <div class="telegram-card">
-        <div class="stat-value">Global CDN</div>
-        <div class="stat-label">Served from nearest data center</div>
-      </div>
-      <div class="telegram-card">
-        <div class="stat-value">2 GB</div>
-        <div class="stat-label">Max file size — that's a 4K movie</div>
-      </div>
-      <div class="telegram-card">
-        <div class="stat-value">$0</div>
-        <div class="stat-label">Free for all users</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── DOWNLOAD ── -->
-<section class="downloads" id="download">
-  <div class="container">
-    <span class="section-label">Download</span>
-    <h2 class="section-title">Get NoBuf</h2>
-    <p class="section-subtitle" style="margin: 0 auto;">Always free. Always open source.</p>
-
-    <div class="download-cards" id="download-cards">
-      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" id="dl-win" class="download-card">
-        <div class="platform-icon">🪟</div>
-        <h4>Windows</h4>
-        <p>.msi / .exe</p>
-        <span class="download-link">Download →</span>
-        <div class="download-version" id="dl-version-win"></div>
-      </a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" id="dl-mac" class="download-card">
-        <div class="platform-icon">🍎</div>
-        <h4>macOS</h4>
-        <p>Intel + Apple Silicon</p>
-        <span class="download-link">Download →</span>
-        <div class="download-version" id="dl-version-mac"></div>
-      </a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" id="dl-linux" class="download-card">
-        <div class="platform-icon">🐧</div>
-        <h4>Linux</h4>
-        <p>AppImage / .deb</p>
-        <span class="download-link">Download →</span>
-        <div class="download-version" id="dl-version-linux"></div>
-      </a>
-      <p class="download-beta-note" style="grid-column: 1 / -1; margin-top: 0.5rem;">Looking for a specific format? See <a href="https://github.com/Istiaq-Edu/NoBuf/releases/latest" target="_blank">all release assets</a>.</p>
-    </div>
-
-    <p class="download-beta-note"><strong>⚠ Auto-update is not yet active.</strong> Watch <a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank">Releases</a> for the latest builds.</p>
-  </div>
-</section>
-
-<!-- ── FOOTER ── -->
-<footer>
-  <div class="container">
-    <div class="footer-left">
-      © 2025–2026 NoBuf. MIT License. Not affiliated with Telegram FZ-LLC.
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/Istiaq-Edu/NoBuf" target="_blank">GitHub</a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf/releases" target="_blank">Releases</a>
-      <a href="https://github.com/Istiaq-Edu/NoBuf/blob/main/LICENSE" target="_blank">License</a>
+  <div class="footer-base">
+    <div class="footer-base-inner">
+      <span>© 2025–2026 NoBuf · MIT License</span>
+      <span>Not affiliated with Telegram FZ-LLC</span>
     </div>
   </div>
 </footer>
 
-<!-- ── JS ── -->
-<script>
-  // ── Intersection Observer for fade-in + pipeline stagger ──
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.fade-in, .pipeline-step').forEach(el => observer.observe(el));
-
-  // Smooth scroll for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
-  // Nav background on scroll
-  const nav = document.querySelector('nav');
-  window.addEventListener('scroll', () => {
-    nav.style.background = window.scrollY > 20
-      ? 'rgba(1, 55, 24, 0.95)'
-      : 'rgba(1, 55, 24, 0.85)';
-  });
-
-  // Fetch latest release and resolve direct download URLs per platform
-  (async function fetchLatestRelease() {
-    try {
-      const resp = await fetch('https://api.github.com/repos/Istiaq-Edu/NoBuf/releases/latest');
-      if (!resp.ok) return;
-      const data = await resp.json();
-      const version = data.tag_name || data.name || '';
-      const cleanVersion = version.startsWith('v') ? version : 'v' + version;
-      const assets = data.assets || [];
-
-      // Update hero badge
-      const heroVersion = document.getElementById('hero-version');
-      if (heroVersion && version) heroVersion.textContent = cleanVersion;
-
-      // Update download cards version labels
-      const dlLabels = document.querySelectorAll('.download-version');
-      dlLabels.forEach(el => {
-        if (version) el.textContent = cleanVersion;
-      });
-
-      // Resolve direct download URLs per platform
-      const findAsset = (patterns) => {
-        for (const pat of patterns) {
-          const match = assets.find(a => a.name.toLowerCase().includes(pat.toLowerCase()));
-          if (match) return match.browser_download_url;
-        }
-        return null;
-      };
-
-      // Windows: prefer .msi, fall back to .exe
-      const winUrl = findAsset(['x64_en-US.msi', 'x64-setup.exe', '.msi', '.exe']);
-      const winEl = document.getElementById('dl-win');
-      if (winUrl && winEl) winEl.href = winUrl;
-
-      // macOS: detect Apple Silicon vs Intel, fall back to x64
-      const isAppleSilicon = /Mac/.test(navigator.userAgent) &&
-        (navigator.maxTouchPoints > 1 || /Apple/.test(navigator.vendor));
-      const macUrl = isAppleSilicon
-        ? findAsset(['aarch64.app', 'aarch64.dmg', '_arm64', 'arm64'])
-        : findAsset(['x64.app', 'x64.dmg', 'intel', 'x86_64']);
-      const macEl = document.getElementById('dl-mac');
-      if (macUrl && macEl) macEl.href = macUrl;
-
-      // Linux: prefer AppImage, fall back to .deb
-      const linuxUrl = findAsset(['amd64.appimage', 'amd64.deb', '.appimage', '.deb']);
-      const linuxEl = document.getElementById('dl-linux');
-      if (linuxUrl && linuxEl) linuxEl.href = linuxUrl;
-
-      // ── Highlight the card matching the visitor's OS ──
-      const ua = navigator.userAgent;
-      const isWin = /Win/.test(ua);
-      const isMac = /Mac/.test(ua);
-      const isLinux = /Linux/.test(ua) && !/Android/.test(ua);
-      const detectedId = isWin ? 'dl-win' : isMac ? 'dl-mac' : isLinux ? 'dl-linux' : null;
-      if (detectedId) {
-        const detectedEl = document.getElementById(detectedId);
-        if (detectedEl) detectedEl.classList.add('detected');
-      }
-    } catch (e) {
-      // Silently fail — cards keep their fallback GitHub releases link
-    }
-  })();
-
-  // ── Cursor glow follow in hero ──
-  const heroGlow = document.getElementById('hero-glow');
-  const heroSection = document.querySelector('.hero');
-  if (heroGlow && heroSection) {
-    heroSection.addEventListener('mousemove', (e) => {
-      const rect = heroSection.getBoundingClientRect();
-      heroGlow.style.left = (e.clientX - rect.left) + 'px';
-      heroGlow.style.top = (e.clientY - rect.top) + 'px';
-    });
-  }
-
-  // ── Magnetic button effect ──
-  document.querySelectorAll('.btn-primary, .btn-ghost').forEach(btn => {
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      btn.style.transform = 'translate(' + (x * 0.15) + 'px, ' + (y * 0.15) + 'px)';
-    });
-    btn.addEventListener('mouseleave', () => {
-      btn.style.transform = '';
-    });
-  });
-
-  // ── Nav scrolled class ──
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 20);
-  });
-
-  // ── Hero banner parallax ──
-  const heroBanner = document.querySelector('.hero-banner');
-  if (heroBanner) {
-    window.addEventListener('scroll', () => {
-      const scrolled = window.scrollY;
-      if (scrolled < 800) {
-        heroBanner.style.transform = 'translateY(' + (scrolled * 0.08) + 'px)';
-      }
-    }, { passive: true });
-  }
-</script>
-
+<script src="shared.js" defer></script>
 </body>
 </html>
-
