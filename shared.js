@@ -9,11 +9,23 @@
 
   document.documentElement.classList.add("js");
 
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // Motion preference: user toggle (localStorage) overrides the OS signal.
+  // Windows "Animation effects: off" makes browsers report reduce-motion even
+  // when users just want a fast PC — so the site decides for itself unless told.
+  var MOTION_KEY = "nobuf-motion";
+  var osReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   var finePointer = window.matchMedia("(pointer: fine)");
-  try {
-    reduceMotion.addEventListener("change", function () { location.reload(); });
-  } catch (e) { /* older browsers: value stays as loaded */ }
+  var stored = null;
+  try { stored = localStorage.getItem(MOTION_KEY); } catch (e) {}
+  if (stored === "off") document.documentElement.classList.add("motion-off");
+  // default: animations ON regardless of OS signal (site decision), unless user chose otherwise
+  var reduceMotion = {
+    matches: stored === "off",
+    media: "(custom)",
+    addEventListener: function () {},
+    removeEventListener: function () {}
+  };
+
 
   function onReady(fn) {
     if (document.readyState !== "loading") fn();
