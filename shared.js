@@ -11,6 +11,9 @@
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   var finePointer = window.matchMedia("(pointer: fine)");
+  try {
+    reduceMotion.addEventListener("change", function () { location.reload(); });
+  } catch (e) { /* older browsers: value stays as loaded */ }
 
   function onReady(fn) {
     if (document.readyState !== "loading") fn();
@@ -313,6 +316,8 @@
         head.style.left = "calc(" + (frac * 100).toFixed(3) + "% - 1px)";
         timeEl.textContent = fmt(frac * TOTAL) + " / " + fmt(TOTAL);
         pctEl.textContent = Math.round(newEnd * 100) + "% cached";
+        track.setAttribute("aria-valuenow", String(Math.round(frac * 100)));
+        track.setAttribute("aria-valuetext", fmt(frac * TOTAL) + ", " + Math.round(newEnd * 100) + "% cached");
         if (flash && animateTo !== undefined) {
           var mid = ((frac + animateTo) / 2) * 100;
           flash.style.left = "calc(" + mid.toFixed(2) + "% - 30px)";
@@ -326,6 +331,17 @@
         var r = track.getBoundingClientRect();
         return (e.clientX - r.left) / r.width;
       }
+      // keyboard access for role=slider
+      track.setAttribute("aria-orientation", "horizontal");
+      track.addEventListener("keydown", function (e) {
+        var step = e.shiftKey ? 0.10 : 0.02;
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); render(Math.min(1, cached + step), cached); }
+        else if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); render(Math.max(0, cached - step), cached); }
+        else if (e.key === "Home") { e.preventDefault(); render(0, cached); }
+        else if (e.key === "End") { e.preventDefault(); render(1, cached); }
+        else if (e.key === "PageUp") { e.preventDefault(); render(Math.min(1, cached + 0.25), cached); }
+        else if (e.key === "PageDown") { e.preventDefault(); render(Math.max(0, cached - 0.25), cached); }
+      });
       track.addEventListener("pointerdown", function (e) {
         dragging = true;
         track.setPointerCapture(e.pointerId);
