@@ -86,7 +86,7 @@
       <div class="hero-copy">
       <p class="pill pill-accent hero-enter hero-enter-1 mb-24">
         <span class="dot"></span>
-        v1.0 · Free &amp; open source · Windows / macOS / Linux
+        v1.0 · Free &amp; open source · Auto-updating · Windows / macOS / Linux
       </p>
       <h1 class="display hero-enter hero-enter-2" data-kinetic data-accent-from="7" style="text-align: left;">
         Your Telegram channels are a movie library. Start watching like one.
@@ -105,6 +105,8 @@
         <span>$0</span>
         <span class="sep">·</span>
         <span>local-first</span>
+        <span class="sep">·</span>
+        <span>auto-updates</span>
         <span class="sep">·</span>
         <span>no telemetry</span>
       </p>
@@ -273,6 +275,43 @@
           <h3 class="h4">Caching that follows you</h3>
           <p>Playback starts instantly while the rest of the file quietly downloads ahead of your playhead, so rewinds are instant.</p>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seek bar anatomy -->
+  <section class="section" id="anatomy">
+    <div class="container">
+      <div class="section-head reveal" data-num="03">
+        <h2 class="h2">One seek bar. Four honest layers.</h2>
+        <p class="lead">Every color on NoBuf's player bar means something. No fake progress, no guessing what's buffered — hover each layer below.</p>
+      </div>
+      <div class="anatomy reveal" data-focus="">
+        <div class="anatomy-bar" aria-hidden="true">
+          <div class="ab-layer ab-white"></div>
+          <div class="ab-layer ab-green"></div>
+          <div class="ab-layer ab-yellow"></div>
+          <div class="ab-layer ab-red"></div>
+        </div>
+        <div class="anatomy-scale"><span>0:00</span><span>33:00</span><span>1:06:00</span><span>1:39:00</span><span>2:13:42</span></div>
+        <div class="legend">
+          <div class="legend-item" data-layer="white">
+            <span class="legend-swatch sw-white"></span>
+            <div><b>White — playing from memory</b><span>The segment currently decoded in RAM and on your screen right now.</span></div>
+          </div>
+          <div class="legend-item" data-layer="green">
+            <span class="legend-swatch sw-green"></span>
+            <div><b>Green — safe on disk</b><span>Already downloaded to the cache. Seek here anytime: it replays instantly, even offline this session.</span></div>
+          </div>
+          <div class="legend-item" data-layer="yellow">
+            <span class="legend-swatch sw-yellow"></span>
+            <div><b>Yellow — thumbnail coverage</b><span>Frame previews are ready here. Hover the bar and see exactly where you'll land before you click.</span></div>
+          </div>
+          <div class="legend-item" data-layer="red">
+            <span class="legend-swatch sw-red"></span>
+            <div><b>Red — your playhead</b><span>Where you are right now. Drag it anywhere; NoBuf fetches and plays from that exact spot.</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>

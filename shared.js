@@ -276,6 +276,27 @@
     });
   });
 
+  /* ---------- Seek-bar anatomy: legend hover highlights layer ---------- */
+  onReady(function () {
+    var box = document.querySelector(".anatomy");
+    if (!box || box.dataset.anatInit) return;
+    box.dataset.anatInit = "1";
+    var items = box.querySelectorAll(".legend-item");
+    function focus(layer) {
+      if (layer) box.setAttribute("data-focus", layer);
+      else box.removeAttribute("data-focus");
+    }
+    items.forEach(function (item) {
+      item.addEventListener("mouseenter", function () { focus(item.getAttribute("data-layer")); });
+      item.addEventListener("mouseleave", function () { focus(null); });
+      // touch: tap toggles
+      item.addEventListener("click", function () {
+        var l = item.getAttribute("data-layer");
+        focus(box.getAttribute("data-focus") === l ? null : l);
+      });
+    });
+  });
+
   /* ---------- Kinetic hero: wrap words in masks ---------- */
   onReady(function () {
     var targets = document.querySelectorAll("[data-kinetic]");
