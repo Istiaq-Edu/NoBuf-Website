@@ -261,6 +261,87 @@
     });
   });
 
+  /* ---------- Kinetic hero: wrap words in masks ---------- */
+  onReady(function () {
+    var targets = document.querySelectorAll("[data-kinetic]");
+    if (!targets.length) return;
+    targets.forEach(function (el) {
+      if (el.dataset.kineticDone) return;
+      el.dataset.kineticDone = "1";
+      var words = el.textContent.trim().split(/\s+/);
+      el.textContent = "";
+      var accentFrom = parseInt(el.getAttribute("data-accent-from") || "999", 10);
+      words.forEach(function (word, i) {
+        var w = document.createElement("span");
+        w.className = "w";
+        var inner = document.createElement("span");
+        inner.style.setProperty("--wi", String(i));
+        if (i >= accentFrom) inner.className = "accent-span";
+        inner.textContent = word;
+        w.appendChild(inner);
+        el.appendChild(w);
+        el.appendChild(document.createTextNode(" "));
+      });
+    });
+  });
+
+  /* ---------- Interactive seek demo ---------- */
+  onReady(function () {
+    document.querySelectorAll("[data-seekdemo]").forEach(function (demo) {
+      var track = demo.querySelector(".sd-track");
+      if (!track || track.dataset.sdInit) return;
+      track.dataset.sdInit = "1";
+      var fill = demo.querySelector(".sd-fill");
+      var rangeEl = demo.querySelector(".sd-range");
+      var head = demo.querySelector(".sd-head");
+      var flash = demo.querySelector(".sd-flash");
+      var timeEl = demo.querySelector(".sd-time");
+      var pctEl = demo.querySelector(".sd-pct");
+      var TOTAL = 2 * 3600 + 13 * 60 + 42; // demo: 2:13:42
+      var cached = 0.18, dragging = false;
+
+      function fmt(s) {
+        var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
+        return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(sec).padStart(2, "0");
+      }
+      function render(frac, animateTo) {
+        frac = Math.max(0, Math.min(1, frac));
+        // instant cache to the grabbed point (the product promise)
+        var newEnd = Math.max(cached, frac);
+        fill.style.width = (newEnd * 100).toFixed(2) + "%";
+        rangeEl.style.width = (newEnd * 100).toFixed(2) + "%";
+        head.style.left = "calc(" + (frac * 100).toFixed(3) + "% - 1px)";
+        timeEl.textContent = fmt(frac * TOTAL) + " / " + fmt(TOTAL);
+        pctEl.textContent = Math.round(newEnd * 100) + "% cached";
+        if (flash && animateTo !== undefined) {
+          var mid = ((frac + animateTo) / 2) * 100;
+          flash.style.left = "calc(" + mid.toFixed(2) + "% - 30px)";
+          flash.classList.remove("on");
+          void flash.offsetWidth;
+          flash.classList.add("on");
+        }
+        cached = newEnd;
+      }
+      function fracFromEvent(e) {
+        var r = track.getBoundingClientRect();
+        return (e.clientX - r.left) / r.width;
+      }
+      track.addEventListener("pointerdown", function (e) {
+        dragging = true;
+        track.setPointerCapture(e.pointerId);
+        var from = cached;
+        render(fracFromEvent(e), from);
+      });
+      track.addEventListener("pointermove", function (e) {
+        if (dragging) render(fracFromEvent(e));
+      });
+      ["pointerup", "pointercancel"].forEach(function (ev) {
+        track.addEventListener(ev, function () { dragging = false; });
+      });
+      render(cached);
+    });
+  });
+
   /* ---------- Code copy buttons ---------- */
   onReady(function () {
     document.querySelectorAll("[data-copy]").forEach(function (btn) {

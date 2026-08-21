@@ -81,14 +81,14 @@
 <main id="main">
   <!-- Hero -->
   <section class="hero section-tight" data-hero-ambient>
+    <div class="hero-aurora" aria-hidden="true"></div>
     <div class="container tc">
       <p class="pill pill-accent hero-enter hero-enter-1 mb-24">
         <span class="dot"></span>
         v1.0 · Free &amp; open source · Windows / macOS / Linux
       </p>
-      <h1 class="display hero-enter hero-enter-2" style="max-width: 880px; margin-inline: auto;">
-        Your Telegram channels are a movie library.
-        <span class="accent-span">Start watching like one.</span>
+      <h1 class="display hero-enter hero-enter-2" data-kinetic data-accent-from="7" style="max-width: 980px; margin-inline: auto; text-align: left;">
+        Your Telegram channels are a movie library. Start watching like one.
       </h1>
       <p class="lead hero-enter hero-enter-3 mt-24" style="max-width: 680px; margin-inline: auto;">
         NoBuf streams video straight from your channels. Press play and it plays,
@@ -147,6 +147,14 @@
     </div>
   </section>
 
+  <!-- Format marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span><b>MKV</b>streamed, not downloaded</span><span><b>HEVC</b>HDR &amp; 10-bit handled</span><span><b>ASS/SRT</b>embedded subs render with fonts</span><span><b>Dual-audio</b>switch languages mid-scene</span><span><b>Cue-less seeks</b>bisection where indexes end</span><span><b>4K</b>hover-scrub thumbnails</span><span><b>OpenSubtitles</b>hash-matched search</span><span><b>[NB]</b>your channels are folders</span>
+      <span><b>MKV</b>streamed, not downloaded</span><span><b>HEVC</b>HDR &amp; 10-bit handled</span><span><b>ASS/SRT</b>embedded subs render with fonts</span><span><b>Dual-audio</b>switch languages mid-scene</span><span><b>Cue-less seeks</b>bisection where indexes end</span><span><b>4K</b>hover-scrub thumbnails</span><span><b>OpenSubtitles</b>hash-matched search</span><span><b>[NB]</b>your channels are folders</span>
+    </div>
+  </div>
+
   <!-- Problem mirror -->
   <section class="section-tight">
     <div class="container reveal">
@@ -162,7 +170,7 @@
   <!-- Why not just Telegram -->
   <section class="section" id="why">
     <div class="container">
-      <div class="section-head reveal">
+      <div class="section-head reveal" data-num="01">
         <h2 class="h2">Why not just Telegram?</h2>
         <p class="lead">Telegram is a great vault. It was never a cinema. NoBuf keeps everything where it is and adds the missing half.</p>
       </div>
@@ -229,6 +237,19 @@
           <p>Serverside keyframe indexes grow as the file arrives, VBR-aware mapping resolves any timestamp,
              and cue-less MKVs get cluster bisection. What used to freeze a player for minutes lands in seconds.
              Scrub anywhere, even parts you haven't buffered: frame previews follow your cursor.</p>
+          <div class="seekdemo" data-seekdemo aria-label="Interactive seek demonstration: drag to any point, it plays instantly">
+            <div class="sd-track" role="slider" aria-label="Seek position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="18" tabindex="0">
+              <div class="sd-fill"></div>
+              <div class="sd-range"></div>
+              <div class="sd-flash"></div>
+              <div class="sd-head"></div>
+            </div>
+            <div class="sd-meta">
+              <span class="sd-time">0:00 / 2:13:42</span>
+              <span class="sd-pct tnum">18% cached</span>
+              <span class="sd-hint">drag anywhere · it plays instantly</span>
+            </div>
+          </div>
         </article>
         <article class="card reveal" data-spot>
           <div class="card-icon">
@@ -331,7 +352,7 @@
   <!-- Setup in 3 steps -->
   <section class="section" id="how">
     <div class="container">
-      <div class="section-head reveal">
+      <div class="section-head reveal" data-num="02">
         <h2 class="h2">Setup in three steps</h2>
         <p class="lead">One login you already have, one scan, done.</p>
       </div>
@@ -426,6 +447,7 @@
       </ul>
     </div>
   </div>
+  <div class="footer-ghost" aria-hidden="true">NoBuf</div>
   <div class="footer-base">
     <div class="footer-base-inner">
       <span>© 2025–2026 NoBuf · MIT License</span>
