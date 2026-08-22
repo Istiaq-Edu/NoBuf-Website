@@ -372,11 +372,13 @@
       }
       function seekTo(frac, viaKeys) {
         pct = frac;
-        if (!viaKeys) {
+        if (!viaKeys && !box._leaveLock) {
           thumbState.textContent = "instant seek";
           preview.classList.add("on");
           clearTimeout(box._pt);
-          box._pt = setTimeout(function(){ preview.classList.remove("on"); }, 900);
+          box._pt = setTimeout(function(){
+            if (!dragging) preview.classList.remove("on");
+          }, 900);
         }
         paint();
       }
@@ -391,7 +393,7 @@
         // preview follows the cursor like the app's hover scrub
         var r = track.getBoundingClientRect();
         var pf = Math.max(12, Math.min(88, f*100));  /* keep 228px card on-screen */
-        preview.style.left = pf.toFixed(2) + "%";
+        preview.style.setProperty("--px", pf.toFixed(2) + "%");
         timeEl.textContent = fmt(f*TOTAL);
         thumbState.textContent = f <= (parseFloat(cache.style.width)||30)/100 ? "from cache · instant" : "fetching…";
         if (dragging) seekTo(f);
@@ -401,9 +403,17 @@
         track.addEventListener(ev, function(){ dragging = false; });
       });
       paint(); // set initial legend state
-      track.addEventListener("mouseleave", function () {
+      track.addEventListener("pointerleave", function () {
+        box._leaveLock = true;
+        clearTimeout(box._pt);
+        dragging = false;
         preview.classList.remove("on");
         timeEl.textContent = fmt(pct*TOTAL);
+        setTimeout(function(){ box._leaveLock = false; }, 50); // swallow stale events only
+      });
+      track.addEventListener("pointerenter", function () {
+        box._leaveLock = false;
+        preview.classList.add("on");
       });
       track.addEventListener("keydown", function (e) {
         var step = e.shiftKey ? 0.10 : 0.02;

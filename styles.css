@@ -1153,10 +1153,9 @@ html.js.loaded .hero-frame-wrap { transform: none; }
 
 /* ---------- Seek-bar anatomy: faithful playable replica ---------- */
 .anatomy { overflow-x: clip; padding-bottom: clamp(18px, 2.5vw, 30px); }
-.sbd { position: relative; }
-.sbd-slot { position: relative; height: 148px; }
+.sbd { position: relative; padding-top: 64px; }
 .sbd-preview {
-  position: absolute; bottom: 4px;
+  position: absolute; bottom: calc(100% - 52px);
   left: var(--px, 50%);
   transform: translateX(-50%);
   opacity: 0; pointer-events: none;
@@ -1210,7 +1209,7 @@ html.js.loaded .hero-frame-wrap { transform: none; }
   width: calc(var(--pct, 30) * .34 * 1%);
   border-radius: 5px;
   background: repeating-linear-gradient(115deg,
-    rgba(255,255,255,.38) 0 9px, rgba(255,255,255,.20) 9px 18px);
+    rgba(255,255,255,.55) 0 9px, rgba(255,255,255,.30) 9px 18px);
   transition: width 200ms ease;
 }
 /* green: disk cache — thin glowing strip along the BOTTOM edge */
