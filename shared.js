@@ -297,6 +297,96 @@
     });
   });
 
+  /* ---------- Seek-bar anatomy demo: playable ---------- */
+  onReady(function () {
+    document.querySelectorAll("[data-sbdemo]").forEach(function (box) {
+      if (box.dataset.sbInit) return;
+      box.dataset.sbInit = "1";
+      var track = box.querySelector(".sbd-track");
+      var head = box.querySelector(".sbd-head");
+      var buffers = box.querySelector(".sbd-buffers");
+      var cache = box.querySelector(".sbd-cache");
+      var thumbs = box.querySelector(".sbd-thumbs");
+      var preview = box.querySelector(".sbd-preview");
+      var thumbState = box.querySelector(".sbd-state");
+      var timeEl = box.querySelector(".sbd-time");
+      var TOTAL = 2*3600 + 13*60 + 42;
+      var pct = 30, dragging = false;
+
+      function fmt(s) {
+        var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), x = Math.floor(s%60);
+        return (h ? h+":"+String(m).padStart(2,"0") : m) + ":" + String(x).padStart(2,"0");
+      }
+      var INIT_CACHE = 30;   // percent
+      function paint() {
+        // --pct stays a FRACTION: CSS computes calc(var(--pct) * 1%)
+        track.style.setProperty("--pct", pct.toFixed(4));
+        track.setAttribute("aria-valuenow", String(Math.round(pct*100)));
+        track.setAttribute("aria-valuetext", fmt(pct*TOTAL));
+        timeEl.textContent = fmt(pct*TOTAL);
+        // white memory ranges hug the playhead (clamped inside the track)
+        var memW = 14;
+        var left = Math.max(0, Math.min(100 - memW, pct*100 - memW*0.6));
+        buffers.style.left = left.toFixed(2) + "%";
+        buffers.style.width = memW + "%";
+        // green disk cache grows toward the playhead, never shrinks below start
+        var cachePct = Math.min(100, Math.max(INIT_CACHE, pct*100));
+        cache.style.width = cachePct.toFixed(2) + "%";
+        // yellow previews cover a leading portion of cached range
+        thumbs.style.width = (cachePct * 0.62).toFixed(2) + "%";
+      }
+      function fracFrom(e) {
+        var r = track.getBoundingClientRect();
+        return Math.max(0, Math.min(1, (e.clientX - r.left)/r.width));
+      }
+      function seekTo(frac, viaKeys) {
+        pct = frac;
+        if (!viaKeys) {
+          thumbState.textContent = "instant seek";
+          preview.classList.add("on");
+          clearTimeout(box._pt);
+          box._pt = setTimeout(function(){ preview.classList.remove("on"); }, 900);
+        }
+        paint();
+      }
+      track.addEventListener("pointerdown", function (e) {
+        dragging = true;
+        try { track.setPointerCapture(e.pointerId); } catch(err){}
+        seekTo(fracFrom(e));
+        e.preventDefault();
+      });
+      track.addEventListener("pointermove", function (e) {
+        var f = fracFrom(e);
+        // preview follows the cursor like the app's hover scrub
+        var r = track.getBoundingClientRect();
+        var pf = Math.max(12, Math.min(88, f*100));  /* keep 228px card on-screen */
+        preview.style.left = pf.toFixed(2) + "%";
+        timeEl.textContent = fmt(f*TOTAL);
+        thumbState.textContent = f <= (parseFloat(cache.style.width)||30)/100 ? "from cache · instant" : "fetching…";
+        if (dragging) seekTo(f);
+        else preview.classList.add("on");
+      });
+      ["pointerup","pointercancel"].forEach(function(ev){
+        track.addEventListener(ev, function(){ dragging = false; });
+      });
+      track.addEventListener("mouseleave", function () {
+        preview.classList.remove("on");
+        timeEl.textContent = fmt(pct*TOTAL);
+      });
+      track.addEventListener("keydown", function (e) {
+        var step = e.shiftKey ? 0.10 : 0.02;
+        var k = e.key;
+        if (k==="ArrowRight"||k==="ArrowUp") { e.preventDefault(); seekTo(Math.min(1,pct+step), true); }
+        else if (k==="ArrowLeft"||k==="ArrowDown") { e.preventDefault(); seekTo(Math.max(0,pct-step), true); }
+        else if (k==="Home") { e.preventDefault(); seekTo(0, true); }
+        else if (k==="End") { e.preventDefault(); seekTo(1, true); }
+        else if (k==="PageUp") { e.preventDefault(); seekTo(Math.min(1,pct+0.25), true); }
+        else if (k==="PageDown") { e.preventDefault(); seekTo(Math.max(0,pct-0.25), true); }
+      });
+      paint();
+    });
+  });
+
   /* ---------- Kinetic hero: wrap words in masks ---------- */
   onReady(function () {
     var targets = document.querySelectorAll("[data-kinetic]");

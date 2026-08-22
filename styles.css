@@ -1050,6 +1050,21 @@ html.js.loaded .hero-frame-wrap { transform: none; }
 }
 
 
+/* Hero frame fits the first viewport — no half-cut screenshot */
+.hero-side .shot-frame {
+  max-height: clamp(300px, calc(100svh - 220px), 520px);
+  display: flex;
+  flex-direction: column;
+}
+.hero-side .shot-frame img {
+  object-fit: cover;
+  object-position: top;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+
 /* ---------- Seek-bar anatomy explainer ---------- */
 .anatomy {
   background: var(--bg-1);
@@ -1128,3 +1143,118 @@ html.js.loaded .hero-frame-wrap { transform: none; }
 .anatomy[data-focus="green"] .ab-green,
 .anatomy[data-focus="yellow"] .ab-yellow,
 .anatomy[data-focus="red"] .ab-red { opacity: 1; }
+
+
+/* ---------- Seek-bar anatomy: faithful playable replica ---------- */
+.anatomy { overflow-x: clip; padding-bottom: clamp(18px, 2.5vw, 30px); }
+.sbd { position: relative; padding-top: 74px; }  /* room for preview card */
+.sbd-preview {
+  position: absolute; top: 0; left: 0;
+  transform: translateX(-50%);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--t-fast);
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  z-index: 3;
+}
+.sbd-preview.on { opacity: 1; }
+.sbd-thumb {
+  width: 228px; height: 128px;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background:
+    linear-gradient(135deg, #16211c 0%, #0d1411 60%, #101820 100%);
+  box-shadow: 0 14px 40px rgba(0,0,0,.55);
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.sbd-state {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+  color: var(--accent);
+  border: 1px solid rgba(46,229,157,.4);
+  background: rgba(46,229,157,.08);
+  padding: 4px 10px; border-radius: 999px;
+}
+.sbd-time {
+  font-family: var(--font-mono); font-size: 12.5px;
+  color: var(--text-hi);
+  background: var(--bg-1);
+  border: 1px solid var(--line-subtle);
+  padding: 2px 8px; border-radius: 6px;
+}
+
+/* The track — mirrors the app's four-layer bar */
+.sbd-track {
+  --h: 16px;
+  position: relative;
+  height: var(--h);
+  border-radius: 8px;
+  background: rgba(255,255,255,.07);
+  cursor: crosshair;
+  touch-action: none;
+  transition: height 140ms ease;
+  outline-offset: 4px;
+}
+.sbd-track:hover, .sbd-track:focus-visible { --h: 22px; }
+
+/* white: in-memory buffers (ranges hugging playhead) */
+.sbd-buffers {
+  position: absolute; top: 3px; bottom: 3px; left: 0;
+  width: calc(var(--pct, 30) * .34 * 1%);
+  border-radius: 5px;
+  background: repeating-linear-gradient(115deg,
+    rgba(255,255,255,.38) 0 9px, rgba(255,255,255,.20) 9px 18px);
+  transition: width 200ms ease;
+}
+/* green: disk cache — thin glowing strip along the BOTTOM edge */
+.sbd-cache {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 4px;
+  width: calc(var(--pct, 30) * 1%);
+  background: linear-gradient(90deg, #17b57b, #2ee59d);
+  box-shadow: 0 0 12px rgba(46,229,157,.55);
+  border-radius: 0 3px 3px 0;
+  transition: width 300ms cubic-bezier(.22,1,.36,1);
+}
+/* yellow: thumbnail coverage — thin strip along the TOP edge */
+.sbd-thumbs {
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 4px;
+  width: calc(var(--pct, 30) * .62 * 1%);
+  background: linear-gradient(90deg, #a8813c, #e8b45a);
+  box-shadow: 0 0 10px rgba(232,180,90,.45);
+  border-radius: 0 3px 3px 0;
+}
+/* live fetch pulse just ahead of the cache frontier */
+.sbd-fetch {
+  position: absolute; bottom: 0; height: 4px;
+  left: calc(var(--pct, 30) * 1%);
+  width: 46px;
+  background: linear-gradient(90deg, rgba(46,229,157,.75), transparent);
+  animation: fetchpulse 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes fetchpulse {
+  0%, 100% { opacity: .25; }
+  50% { opacity: .85; }
+}
+html.motion-off .sbd-fetch { animation: none; }
+
+/* red playhead with grip dot */
+.sbd-head {
+  position: absolute; top: -4px; bottom: -4px;
+  left: calc(var(--pct, 30) * 1% - 1px);
+  width: 3px;
+  background: #ff5b5b;
+  border-radius: 2px;
+  box-shadow: 0 0 14px rgba(255,91,91,.7);
+}
+.sbd-head i {
+  position: absolute; top: 50%; left: 50%;
+  width: 13px; height: 13px;
+  transform: translate(-50%, -50%) scale(0);
+  background: #ff5b5b;
+  border: 2px solid #fff2;
+  border-radius: 50%;
+  transition: transform 140ms ease;
+}
+.sbd-track:hover .sbd-head i, .sbd-track:focus-visible .sbd-head i { transform: translate(-50%, -50%) scale(1); }
