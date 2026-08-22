@@ -122,6 +122,10 @@
           </div>
           <img src="assets/preview-thumbnail.webp" alt="NoBuf player streaming a 4K video from a Telegram channel, with a hover-scrub thumbnail over the seek bar and a live cache meter"
                width="1202" height="832" fetchpriority="high">
+          <div class="hero-live" aria-hidden="true">
+            <div class="hl-track"><div class="hl-fill"></div></div>
+            <span class="hl-readout"><b data-hl-pct>31%</b> cached · <b data-hl-speed>4.7 MB/s</b></span>
+          </div>
         </div>
         <figcaption class="visually-hidden">
           Playing a 4K file directly from a Telegram channel while it caches in the background.
@@ -195,6 +199,14 @@
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
               <div><b>QR login &amp; drag-drop upload</b><span>Same account, same files</span></div>
             </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Signed auto-updates</b><span>One click, verified builds</span></div>
+            </div>
+            <div class="panel-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3.5 3.5L13 5"/></svg>
+              <div><b>Global CDN delivery</b><span>Fast downloads wherever you are</span></div>
+            </div>
           </div>
         </div>
         <div class="panel panel-adds">
@@ -232,14 +244,13 @@
   <section class="section-tight" id="highlights">
     <div class="container">
       <div class="card-grid grid-3" data-stagger>
-        <article class="card span-2 reveal" data-spot>
+        <article class="card span-2 reveal" data-spot data-kicker="01 · SEEK">
           <div class="card-icon">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 2"/></svg>
           </div>
           <h3 class="h4">The seek engine</h3>
-          <p>Serverside keyframe indexes grow as the file arrives, VBR-aware mapping resolves any timestamp,
-             and cue-less MKVs get cluster bisection. What used to freeze a player for minutes lands in seconds.
-             Scrub anywhere, even parts you haven't buffered: frame previews follow your cursor.</p>
+          <p>Keyframe indexes grow as files arrive. Cue-less MKVs get cluster bisection,
+             so far jumps land in seconds. Scrub anywhere: frame previews follow your cursor.</p>
           <div class="seekdemo" data-seekdemo aria-label="Interactive seek demonstration: drag to any point, it plays instantly">
             <div class="sd-track" role="slider" aria-label="Seek position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="18" tabindex="0">
               <div class="sd-fill"></div>
@@ -254,21 +265,21 @@
             </div>
           </div>
         </article>
-        <article class="card reveal" data-spot>
+        <article class="card reveal" data-spot data-kicker="02 · FORMATS">
           <div class="card-icon">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h14v14H3z" opacity=".001"/><path d="M4 5c3-2 9-2 12 0M5 8.5c2.5-1.5 7-1.5 10 0M7 12c1.8-1 4.2-1 6 0M10 15.2v.1"/></svg>
           </div>
           <h3 class="h4">Formats, handled</h3>
           <p>HEVC, 10-bit, HDR, odd containers: NoBuf detects what your machine plays and remuxes or hardware-transcodes the rest.</p>
         </article>
-        <article class="card reveal" data-spot>
+        <article class="card reveal" data-spot data-kicker="03 · SUBS">
           <div class="card-icon">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14M5 9h10M7 13h6M9 17h2"/></svg>
           </div>
           <h3 class="h4">Subtitles built in</h3>
           <p>Embedded SRT and ASS render with bundled fonts. Size, position and sync sliders. OpenSubtitles search included.</p>
         </article>
-        <article class="card reveal" data-spot>
+        <article class="card reveal" data-spot data-kicker="04 · CACHE">
           <div class="card-icon">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3v10m0 0l-3.5-3.5M10 13l3.5-3.5M4 16h12"/></svg>
           </div>
@@ -376,7 +387,7 @@
         <figure class="reveal">
           <div class="shot-frame">
             <div class="shot-bar"><span class="shot-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="shot-title">cache meter</span></div>
-            <img src="assets/download-from-cache-in-video-player.webp" alt="In-player download pill showing live megabytes-per-second speed while watching" loading="lazy" width="1202" height="832">
+            <img src="assets/download-from-cache-in-video-player.webp" alt="In-player download pill showing live megabytes-per-second speed while watching" width="1202" height="832">
           </div>
           <figcaption class="shot-caption"><b>Live cache pill.</b> Download speed while the film keeps playing</figcaption>
         </figure>

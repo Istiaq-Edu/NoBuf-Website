@@ -297,6 +297,28 @@
     });
   });
 
+  /* ---------- Hero live cache ticker ---------- */
+  onReady(function () {
+    if (!reduceMotion.matches) {
+      document.querySelectorAll(".hero-live").forEach(function (el) {
+        if (el.dataset.liveInit) return;
+        el.dataset.liveInit = "1";
+        var pctEl = el.querySelector("[data-hl-pct]");
+        var spdEl = el.querySelector("[data-hl-speed]");
+        var fill = el.querySelector(".hl-fill");
+        var pct = 31;
+        setInterval(function () {
+          pct += Math.random() * 1.4;
+          var speed = (3.8 + Math.random() * 2.4);
+          if (pct >= 47) { pct = 31; }
+          if (pctEl) pctEl.textContent = Math.floor(pct) + "%";
+          if (spdEl) spdEl.textContent = speed.toFixed(1) + " MB/s";
+          if (fill) fill.style.width = pct.toFixed(1) + "%";
+        }, 1400);
+      });
+    }
+  });
+
   /* ---------- Seek-bar anatomy demo: playable ---------- */
   onReady(function () {
     document.querySelectorAll("[data-sbdemo]").forEach(function (box) {
