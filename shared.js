@@ -342,6 +342,10 @@
       var INIT_CACHE = 30;   // percent
       function paint() {
         // --pct stays a FRACTION: CSS computes calc(var(--pct) * 1%)
+        var rNow = track.getBoundingClientRect();
+        head.style.transform = "translateX(" + (pct * rNow.width).toFixed(1) + "px)";
+        // sync legend cards with the layer state under the playhead
+        var inCache = pct*100 <= parseFloat(cache.style.width) || 0 <= pct*100;
         track.style.setProperty("--pct", pct.toFixed(4));
         track.setAttribute("aria-valuenow", String(Math.round(pct*100)));
         track.setAttribute("aria-valuetext", fmt(pct*TOTAL));
@@ -356,6 +360,11 @@
         cache.style.width = cachePct.toFixed(2) + "%";
         // yellow previews cover a leading portion of cached range
         thumbs.style.width = (cachePct * 0.62).toFixed(2) + "%";
+        // legend sync: highlight the layer dominating the current position
+        var dom = (pct*100 <= INIT_CACHE) ? "white" : "green";
+        document.querySelectorAll(".legend-item").forEach(function (li) {
+          li.classList.toggle("active", li.getAttribute("data-layer") === dom);
+        });
       }
       function fracFrom(e) {
         var r = track.getBoundingClientRect();
@@ -391,6 +400,7 @@
       ["pointerup","pointercancel"].forEach(function(ev){
         track.addEventListener(ev, function(){ dragging = false; });
       });
+      paint(); // set initial legend state
       track.addEventListener("mouseleave", function () {
         preview.classList.remove("on");
         timeEl.textContent = fmt(pct*TOTAL);

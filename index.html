@@ -240,6 +240,71 @@
     </div>
   </section>
 
+  <!-- Seek bar anatomy -->
+  <section class="section" id="anatomy">
+    <div class="container">
+      <div class="section-head reveal" data-num="02">
+        <h2 class="h2">One seek bar. Four honest layers.</h2>
+        <p class="lead">Every color on NoBuf's player bar means something. No fake progress, no guessing what's buffered — hover each layer below.</p>
+      </div>
+      <div class="anatomy reveal" data-focus="">
+        <div class="sbd" data-sbdemo>
+          <div class="sbd-slot">
+          <div class="sbd-preview" aria-hidden="true">
+            <div class="sbd-thumb"><span class="sbd-state"></span></div>
+            <span class="sbd-time">0:00</span>
+          </div>
+          </div>
+          <div class="sbd-track" role="slider" tabindex="0"
+               aria-label="Demo seek bar: drag, click or use arrow keys"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="30">
+            <div class="sbd-layer sbd-buffers"></div>
+            <div class="sbd-layer sbd-thumbs"></div>
+            <div class="sbd-layer sbd-cache"></div>
+            <div class="sbd-fetch"></div>
+            <div class="sbd-head"><i></i></div>
+          </div>
+          <div class="anatomy-scale"><span>0:00</span><span>33:00</span><span>1:06:00</span><span>1:39:00</span><span>2:13:42</span></div>
+        </div>
+        <div class="legend">
+          <div class="legend-item" data-layer="white" style="--lc:#eceef0">
+            <span class="lg-chip lg-white" aria-hidden="true"><i></i></span>
+            <div>
+              <p class="mono-label lg-kicker">Layer 01</p>
+              <b>White — buffered in memory</b>
+              <span>Ranges decoded into RAM right now. Hover the bar and watch them hug your playhead.</span>
+            </div>
+          </div>
+          <div class="legend-item" data-layer="green" style="--lc:#2ee59d">
+            <span class="lg-chip lg-green" aria-hidden="true"><i></i></span>
+            <div>
+              <p class="mono-label lg-kicker">Layer 02</p>
+              <b>Green — cached to disk</b>
+              <span>The glowing strip along the bottom edge. Seek into it and playback starts instantly.</span>
+            </div>
+          </div>
+          <div class="legend-item" data-layer="yellow" style="--lc:#e8b45a">
+            <span class="lg-chip lg-yellow" aria-hidden="true"><i></i></span>
+            <div>
+              <p class="mono-label lg-kicker">Layer 03</p>
+              <b>Yellow — previews ready</b>
+              <span>The strip along the top edge. A frame preview follows your cursor before you commit.</span>
+            </div>
+          </div>
+          <div class="legend-item" data-layer="red" style="--lc:#ff5b5b">
+            <span class="lg-chip lg-red" aria-hidden="true"><i></i></span>
+            <div>
+              <p class="mono-label lg-kicker">Layer 04</p>
+              <b>Red — your playhead</b>
+              <span>Where you are right now. Drag anywhere; NoBuf fetches and plays from that exact spot.</span>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Highlight cards (asymmetric bento) -->
   <section class="section-tight" id="highlights">
     <div class="container">
@@ -286,52 +351,6 @@
           <h3 class="h4">Caching that follows you</h3>
           <p>Playback starts instantly while the rest of the file quietly downloads ahead of your playhead, so rewinds are instant.</p>
         </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- Seek bar anatomy -->
-  <section class="section" id="anatomy">
-    <div class="container">
-      <div class="section-head reveal" data-num="02">
-        <h2 class="h2">One seek bar. Four honest layers.</h2>
-        <p class="lead">Every color on NoBuf's player bar means something. No fake progress, no guessing what's buffered — hover each layer below.</p>
-      </div>
-      <div class="anatomy reveal" data-focus="">
-        <div class="sbd" data-sbdemo>
-          <div class="sbd-preview" aria-hidden="true">
-            <div class="sbd-thumb"><span class="sbd-state"></span></div>
-            <span class="sbd-time">0:00</span>
-          </div>
-          <div class="sbd-track" role="slider" tabindex="0"
-               aria-label="Demo seek bar: drag, click or use arrow keys"
-               aria-valuemin="0" aria-valuemax="100" aria-valuenow="30">
-            <div class="sbd-layer sbd-buffers"></div>
-            <div class="sbd-layer sbd-thumbs"></div>
-            <div class="sbd-layer sbd-cache"></div>
-            <div class="sbd-fetch"></div>
-            <div class="sbd-head"><i></i></div>
-          </div>
-          <div class="anatomy-scale"><span>0:00</span><span>33:00</span><span>1:06:00</span><span>1:39:00</span><span>2:13:42</span></div>
-        </div>
-        <div class="legend">
-          <div class="legend-item" data-layer="white">
-            <span class="legend-swatch sw-white"></span>
-            <div><b>White — buffered in memory</b><span>Ranges decoded into RAM right now. Hover the bar and watch them hug your playhead.</span></div>
-          </div>
-          <div class="legend-item" data-layer="green">
-            <span class="legend-swatch sw-green"></span>
-            <div><b>Green — cached to disk</b><span>The glowing strip along the bottom: bytes already on your disk. Seek into it and playback starts instantly.</span></div>
-          </div>
-          <div class="legend-item" data-layer="yellow">
-            <span class="legend-swatch sw-yellow"></span>
-            <div><b>Yellow — previews ready</b><span>The strip along the top: hover anywhere in it and a frame preview follows your cursor before you commit.</span></div>
-          </div>
-          <div class="legend-item" data-layer="red">
-            <span class="legend-swatch sw-red"></span>
-            <div><b>Red — your playhead</b><span>Where you are right now. Drag it anywhere; NoBuf fetches and plays from that exact spot.</span></div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
